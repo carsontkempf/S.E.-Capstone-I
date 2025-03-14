@@ -8,7 +8,15 @@
 </head>
 <body>
 <h1>To-Do List</h1>
-<input type="text" id="taskInput" placeholder="Enter new task"/>
+<label for="taskInput">
+    New Task:
+    <input
+            type="text"
+            id="taskInput"
+            placeholder="Enter new task"
+            aria-label="New Task"
+    />
+</label>
 <button id="addTaskButton">Add Task</button>
 <ul id="taskList"></ul>
 <script src="popup.js" type="module"></script>

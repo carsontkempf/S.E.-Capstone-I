@@ -26,7 +26,7 @@
     border-radius: 4px;
 }
 
-#todo button {
+#todo button#addTaskButton {
     width: 100%;
     padding: 0.5rem;
     background-color: #4285f4;
@@ -34,9 +34,10 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin-bottom: 0.5rem;
 }
 
-#todo button:hover {
+#todo button#addTaskButton:hover {
     background-color: #357ae8;
 }
 
@@ -47,15 +48,43 @@
 }
 
 #todo li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 0.5rem;
     border-bottom: 1px solid #ccc;
-    cursor: pointer;
-}
-
-#todo li:hover {
-    background-color: #f0f0f0;
 }
 
 #todo li:last-child {
     border-bottom: none;
+}
+
+#todo li span {
+    flex-grow: 1;
+    margin-right: 0.5rem;
+}
+
+/* Style for icon buttons */
+#todo li button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.25rem;
+}
+
+#todo li button img {
+    width: 24px;
+    height: 24px;
+    transition: filter 0.2s ease;
+}
+
+/* Hover effect for delete button (turn red) */
+#todo li button.delete:hover img {
+    filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(95%) contrast(85%);
+}
+
+/* Hover effect for edit button (turn blue) */
+#todo li button.edit:hover img {
+    filter: brightness(0) saturate(100%) invert(57%) sepia(100%) saturate(2000%) hue-rotate(180deg) brightness(90%) contrast(90%);
 }

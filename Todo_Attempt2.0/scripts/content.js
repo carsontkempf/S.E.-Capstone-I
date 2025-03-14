@@ -13,15 +13,11 @@
       <ul id="taskList"></ul>
     </div>
   `;
-
-    // Append the container to the body of the webpage
     document.body.appendChild(container);
 
-    // Get references to the UI elements
     const taskInput = container.querySelector('#taskInput');
     const addTaskButton = container.querySelector('#addTaskButton');
     const taskList = container.querySelector('#taskList');
-
     let tasks = [];
 
     // Load tasks from localStorage if available
@@ -35,18 +31,54 @@
         localStorage.setItem('tasks', JSON.stringify(tasks));
     };
 
-    // Render tasks to the list
+    // Render tasks to the list with dynamic edit and delete buttons
     const renderTasks = () => {
-        taskList.innerHTML = ''; // Clear the current list
+        taskList.innerHTML = '';
         tasks.forEach((task, index) => {
             const li = document.createElement('li');
-            li.textContent = task;
-            // Click on a task to remove it
-            li.addEventListener('click', () => {
+
+            // Task text
+            const span = document.createElement('span');
+            span.textContent = task;
+            li.appendChild(span);
+
+            // Edit button
+            const editButton = document.createElement('button');
+            editButton.classList.add('edit');
+            const editImg = document.createElement('img');
+            // Use chrome.runtime.getURL() to correctly load the icon from the extension directory
+            editImg.src = chrome.runtime.getURL('images/icons8-edit-24.png');
+            editImg.alt = 'Edit';
+            editButton.appendChild(editImg);
+            li.appendChild(editButton);
+
+            // Delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete');
+            const deleteImg = document.createElement('img');
+            // Use chrome.runtime.getURL() to correctly load the icon from the extension directory
+            deleteImg.src = chrome.runtime.getURL('images/icons8-delete-24.png');
+            deleteImg.alt = 'Delete';
+            deleteButton.appendChild(deleteImg);
+            li.appendChild(deleteButton);
+
+            // Delete event
+            deleteButton.addEventListener('click', () => {
                 tasks.splice(index, 1);
                 saveTasks();
                 renderTasks();
             });
+
+            // Edit event
+            editButton.addEventListener('click', () => {
+                const newTask = prompt('Edit your task:', task);
+                if (newTask !== null && newTask.trim() !== '') {
+                    tasks[index] = newTask.trim();
+                    saveTasks();
+                    renderTasks();
+                }
+            });
+
             taskList.appendChild(li);
         });
     };
@@ -63,8 +95,6 @@
     };
 
     addTaskButton.addEventListener('click', addTask);
-
-    // Initialize the to-do list
     loadTasks();
     renderTasks();
 })();
