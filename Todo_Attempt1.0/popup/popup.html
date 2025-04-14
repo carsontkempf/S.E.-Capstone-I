@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chrome To-Do List</title>
+    <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+<h1>To-Do List</h1>
+<label for="taskInput">
+    New Task:
+    <input
+            type="text"
+            id="taskInput"
+            placeholder="Enter new task"
+            aria-label="New Task"
+    />
+</label>
+<button id="addTaskButton">Add Task</button>
+<ul id="taskList"></ul>
+<script src="popup.js" type="module"></script>
+</body>
+</html>
