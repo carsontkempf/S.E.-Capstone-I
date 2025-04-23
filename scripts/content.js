@@ -32,6 +32,7 @@
     ">
       <h1 style="margin-top: 0;">To-Do List</h1>
       <input type="text" id="taskInput" placeholder="Enter new task" style="width: 100%;" />
+      <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
       <button id="addTaskButton" style="margin-top: 10px;">Add Task</button>
       <ul id="taskList" style="padding-left: 20px;"></ul>
     </div>
@@ -39,11 +40,13 @@
     document.body.appendChild(container);
 
     const taskInput = container.querySelector('#taskInput');
+    const urlInput = container.querySelector('#urlInput');
     const addTaskButton = container.querySelector('#addTaskButton');
     const taskList = container.querySelector('#taskList');
     const toggleButton = container.querySelector('#todo-toggle');
     const todoBox = container.querySelector('#todo');
     let tasks = [];
+    let pendingTitle = '';
 
     // Load tasks from localStorage if available
     const loadTasks = () => {
@@ -63,9 +66,19 @@
             const li = document.createElement('li');
 
             // Task text
-            const span = document.createElement('span');
-            span.textContent = task;
-            li.appendChild(span);
+            let textElement;
+            if (task.url) {
+                textElement = document.createElement('a');
+                textElement.href = task.url;
+                textElement.target = '_blank';
+                textElement.textContent = task.title;
+                textElement.style.textDecoration = 'none';
+                textElement.style.color = 'inherit';
+            } else {
+                textElement = document.createElement('span');
+                textElement.textContent = task.title;
+            }
+            li.appendChild(textElement);
 
             // Edit button
             const editButton = document.createElement('button');
@@ -94,11 +107,21 @@
 
             // Edit event
             editButton.addEventListener('click', () => {
-                const newTask = prompt('Edit your task:', task);
-                if (newTask !== null && newTask.trim() !== '') {
-                    tasks[index] = newTask.trim();
-                    saveTasks();
-                    renderTasks();
+                if (typeof task === 'object' && task !== null) {
+                    const newTitle = prompt('Edit your task title:', task.title);
+                    const newUrl = prompt('Edit your task URL:', task.url);
+                    if (newTitle !== null && newTitle.trim() !== '' && newUrl !== null && newUrl.trim() !== '') {
+                        tasks[index] = { title: newTitle.trim(), url: newUrl.trim() };
+                        saveTasks();
+                        renderTasks();
+                    }
+                } else {
+                    const newTask = prompt('Edit your task:', task);
+                    if (newTask !== null && newTask.trim() !== '') {
+                        tasks[index] = newTask.trim();
+                        saveTasks();
+                        renderTasks();
+                    }
                 }
             });
 
@@ -108,11 +131,23 @@
 
     // Add a new task from the input field
     const addTask = () => {
-        const task = taskInput.value.trim();
-        if (task) {
-            tasks.push(task);
+        const title = taskInput.value.trim();
+        if (!pendingTitle) {
+            if (!title) return;
+            pendingTitle = title;
+            // removed clearing title here
+            urlInput.style.display = 'block';
+            urlInput.focus();
+            addTaskButton.textContent = 'Save Task';
+        } else {
+            const url = urlInput.value.trim();
+            tasks.push({ title: pendingTitle, url });
+            pendingTitle = '';
             saveTasks();
             renderTasks();
+            urlInput.value = '';
+            urlInput.style.display = 'none';
+            addTaskButton.textContent = 'Add Task';
             taskInput.value = '';
         }
     };
