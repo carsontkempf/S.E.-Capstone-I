@@ -5,31 +5,8 @@
 
     // Insert the to-do list HTML structure
     container.innerHTML = `
-    <div id="todo-toggle" style="
-        position: fixed;
-        bottom: 190px;
-        right: 20px;
-        z-index: 10000;
-        cursor: pointer;
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        font-size: 16px;
-        border-radius: 5px;
-    ">–</div>
-    <div id="todo" style="
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 9999;
-        background: white;
-        border: 1px solid #ccc;
-        padding: 10px;
-        box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
-        border-radius: 8px;
-        width: 300px;
-    ">
+    <div id="todo-toggle">–</div>
+    <div id="todo">
       <h1 style="margin-top: 0;">To-Do List</h1>
       <input type="text" id="taskInput" placeholder="Enter new task" style="width: 100%;" />
       <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
