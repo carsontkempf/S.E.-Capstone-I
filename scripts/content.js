@@ -1,4 +1,4 @@
-(function() {
+(async () => {
     // Create container element for the integrated to-do list
     const container = document.createElement('div');
     container.id = 'todo-container';
@@ -45,15 +45,14 @@
     const todoBox = container.querySelector('#todo');
     let tasks = [];
 
-    // Load tasks from localStorage if available
-    const loadTasks = () => {
-        const storedTasks = localStorage.getItem('tasks');
-        tasks = storedTasks ? JSON.parse(storedTasks) : [];
+    // Load tasks from browser storage if available
+    const loadTasks = async () => {
+        await chrome.storage.local.get('tasks').then(result => {tasks = result.tasks ? JSON.parse(result.tasks) : []});
     };
 
-    // Save tasks to localStorage
-    const saveTasks = () => {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+    // Save tasks to browser storage
+    const saveTasks = async () => {
+        chrome.storage.local.set({'tasks': JSON.stringify(tasks)});
     };
 
     // Render tasks to the list with dynamic edit and delete buttons
@@ -126,6 +125,6 @@
     });
 
     addTaskButton.addEventListener('click', addTask);
-    loadTasks();
+    await loadTasks();
     renderTasks();
 })();
