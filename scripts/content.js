@@ -1,19 +1,72 @@
 (async () => {
-    // Create container element for the integrated to-do list
     const container = document.createElement('div');
     container.id = 'todo-container';
 
-    // Insert the to-do list HTML structure
     container.innerHTML = `
-    <div id="todo-toggle">–</div>
-    <div id="todo">
-      <h1 style="margin-top: 0;">To-Do List</h1>
-      <input type="text" id="taskInput" placeholder="Enter new task" style="width: 100%;" />
-      <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
-      <button id="addTaskButton" style="margin-top: 10px;">Add Task</button>
-      <ul id="taskList" style="padding-left: 20px;"></ul>
+    <div id="todo" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background: white;
+        border: 1px solid #ccc;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        width: 300px;
+    ">
+        <div id="todo-header" style="
+            position: relative;
+            padding: 10px;
+            cursor: move;
+            background: #f1f1f1;
+            border-bottom: 1px solid #ccc;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        ">
+        <div id="todo-toggle" style="
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 28px;
+            height: 28px;
+            background-color: #333;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        ">☰</div>
+            <h1 style="margin: 0; text-align: center; font-size: 18px;">To-Do List</h1>
+        </div>
+        <div id="todo-body" style="padding: 10px; padding-bottom: 40px;">
+            <input type="text" id="taskInput" placeholder="Enter task name" style="width: 100%; display: none;" />
+            <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
+            <ul id="taskList" style="padding-left: 20px; margin-top: 10px;"></ul>
+        </div>
+        <button id="addTaskButton" title="Add Task" style="
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            background-color: #333;
+            color: white;
+            font-size: 22px;
+            line-height: 0;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        ">+</button>
     </div>
-  `;
+    `;
     document.body.appendChild(container);
 
     const taskInput = container.querySelector('#taskInput');
@@ -22,31 +75,30 @@
     const taskList = container.querySelector('#taskList');
     const toggleButton = container.querySelector('#todo-toggle');
     const todoBox = container.querySelector('#todo');
+    const todoBody = container.querySelector('#todo-body');
+    const todoHeader = container.querySelector('#todo-header');
     let tasks = [];
-    let pendingTitle = '';
+    let pendingOpen = false;
 
-    // Load tasks from browser storage if available
     const loadTasks = async () => {
-        await chrome.storage.local.get('tasks').then(result => {tasks = result.tasks ? JSON.parse(result.tasks) : []});
+        await chrome.storage.local.get('tasks').then(result => {
+            tasks = result.tasks ? JSON.parse(result.tasks) : [];
+        });
     };
 
-    // Save tasks to browser storage
     const saveTasks = async () => {
-        chrome.storage.local.set({'tasks': JSON.stringify(tasks)});
+        chrome.storage.local.set({ tasks: JSON.stringify(tasks) });
     };
 
-    // Render tasks to the list with dynamic edit and delete buttons
     const renderTasks = () => {
         taskList.innerHTML = '';
         tasks.forEach((task, index) => {
             const li = document.createElement('li');
-            // align buttons next to each other
             li.style.display = 'flex';
             li.style.alignItems = 'center';
             li.style.gap = '0px';
             li.style.justifyContent = 'flex-start';
 
-            // Task text
             let textElement;
             if (task.url) {
                 textElement = document.createElement('a');
@@ -59,92 +111,152 @@
                 textElement = document.createElement('span');
                 textElement.textContent = task.title;
             }
+            textElement.style.flex = '1';
             li.appendChild(textElement);
 
-            // push buttons to the right
-            textElement.style.flex = '1';
-
-            // Edit button
             const editButton = document.createElement('button');
-            editButton.classList.add('edit');
             const editImg = document.createElement('img');
             editImg.src = chrome.runtime.getURL('images/icons8-edit-24.png');
             editImg.alt = 'Edit';
             editButton.appendChild(editImg);
             li.appendChild(editButton);
 
-            // Delete button
             const deleteButton = document.createElement('button');
-            deleteButton.classList.add('delete');
             const deleteImg = document.createElement('img');
             deleteImg.src = chrome.runtime.getURL('images/icons8-delete-24.png');
             deleteImg.alt = 'Delete';
             deleteButton.appendChild(deleteImg);
             li.appendChild(deleteButton);
 
-            // Delete event
             deleteButton.addEventListener('click', () => {
                 tasks.splice(index, 1);
                 saveTasks();
                 renderTasks();
             });
 
-            // Edit event
             editButton.addEventListener('click', () => {
-                if (typeof task === 'object' && task !== null) {
-                    const newTitle = prompt('Edit your task title:', task.title);
-                    const newUrl = prompt('Edit your task URL:', task.url);
-                    if (newTitle !== null && newTitle.trim() !== '' && newUrl !== null && newUrl.trim() !== '') {
-                        tasks[index] = { title: newTitle.trim(), url: newUrl.trim() };
-                        saveTasks();
-                        renderTasks();
+                const inputTitle = document.createElement('input');
+                inputTitle.type = 'text';
+                inputTitle.value = task.title;
+                inputTitle.style.marginRight = '8px';
+
+                const inputUrl = document.createElement('input');
+                inputUrl.type = 'text';
+                inputUrl.value = task.url || '';
+                inputUrl.style.marginRight = '8px';
+
+                li.innerHTML = '';
+                li.appendChild(inputTitle);
+                li.appendChild(inputUrl);
+
+                const saveButton = document.createElement('button');
+                const saveImg = document.createElement('img');
+                saveImg.src = chrome.runtime.getURL('images/save_icon.png');
+                saveImg.alt = 'Save';
+                saveButton.appendChild(saveImg);
+                li.appendChild(saveButton);
+
+                const saveEdit = () => {
+                    const newTitle = inputTitle.value.trim();
+                    const newUrl = inputUrl.value.trim();
+                    if (newTitle === '') {
+                        tasks.splice(index, 1);
+                    } else {
+                        tasks[index] = { title: newTitle, url: newUrl };
                     }
-                } else {
-                    const newTask = prompt('Edit your task:', task);
-                    if (newTask !== null && newTask.trim() !== '') {
-                        tasks[index] = newTask.trim();
-                        saveTasks();
-                        renderTasks();
-                    }
-                }
+                    saveTasks();
+                    renderTasks();
+                };
+
+                saveButton.addEventListener('click', saveEdit);
+                inputTitle.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') saveEdit();
+                    if (e.key === 'Escape') renderTasks();
+                });
+                inputUrl.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') saveEdit();
+                    if (e.key === 'Escape') renderTasks();
+                });
+
+                inputTitle.focus();
             });
 
             taskList.appendChild(li);
         });
     };
 
-    // Add a new task from the input field
-    const addTask = () => {
-        const title = taskInput.value.trim();
-        if (!pendingTitle) {
-            if (!title) return;
-            pendingTitle = title;
-            // removed clearing title here
+    const handleAddButton = () => {
+        if (!pendingOpen) {
+            taskInput.style.display = 'block';
             urlInput.style.display = 'block';
-            urlInput.focus();
-            addTaskButton.textContent = 'Save Task';
+            addTaskButton.textContent = '✔';
+            taskInput.focus();
+            pendingOpen = true;
         } else {
+            const title = taskInput.value.trim();
             const url = urlInput.value.trim();
-            tasks.push({ title: pendingTitle, url });
-            pendingTitle = '';
+            if (!title) return;
+    
+            tasks.push({ title, url });
             saveTasks();
             renderTasks();
-            urlInput.value = '';
-            urlInput.style.display = 'none';
-            addTaskButton.textContent = 'Add Task';
+    
             taskInput.value = '';
+            urlInput.value = '';
+            taskInput.style.display = 'none';
+            urlInput.style.display = 'none';
+            addTaskButton.textContent = '+';
+            pendingOpen = false;
         }
     };
+    
+    // Enter/Escape key handling
+    [taskInput, urlInput].forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleAddButton();
+            } else if (e.key === 'Escape') {
+                taskInput.value = '';
+                urlInput.value = '';
+                taskInput.style.display = 'none';
+                urlInput.style.display = 'none';
+                addTaskButton.textContent = '+';
+                pendingOpen = false;
+            }
+        });
+    });
 
-    // Toggle minimize/maximize
     let isVisible = true;
     toggleButton.addEventListener('click', () => {
         isVisible = !isVisible;
-        todoBox.style.display = isVisible ? 'block' : 'none';
-        toggleButton.textContent = isVisible ? '–' : '☰';
+        todoBody.style.display = isVisible ? 'block' : 'none';
+        toggleButton.textContent = isVisible ? '☰' : '–';
     });
 
-    addTaskButton.addEventListener('click', addTask);
+    // Drag functionality
+    let isDragging = false, offsetX = 0, offsetY = 0;
+    todoHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const rect = todoBox.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            todoBox.style.left = `${e.clientX - offsetX}px`;
+            todoBox.style.top = `${e.clientY - offsetY}px`;
+            todoBox.style.bottom = 'auto';
+            todoBox.style.right = 'auto';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    addTaskButton.addEventListener('click', handleAddButton);
     await loadTasks();
     renderTasks();
 })();
