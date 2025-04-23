@@ -1,4 +1,3 @@
-// content.js
 (function() {
     // Create container element for the integrated to-do list
     const container = document.createElement('div');
@@ -6,11 +5,35 @@
 
     // Insert the to-do list HTML structure
     container.innerHTML = `
-    <div id="todo">
-      <h1>To-Do List</h1>
-      <input type="text" id="taskInput" placeholder="Enter new task" />
-      <button id="addTaskButton">Add Task</button>
-      <ul id="taskList"></ul>
+    <div id="todo-toggle" style="
+        position: fixed;
+        bottom: 190px;
+        right: 20px;
+        z-index: 10000;
+        cursor: pointer;
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        font-size: 16px;
+        border-radius: 5px;
+    ">–</div>
+    <div id="todo" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        width: 300px;
+    ">
+      <h1 style="margin-top: 0;">To-Do List</h1>
+      <input type="text" id="taskInput" placeholder="Enter new task" style="width: 100%;" />
+      <button id="addTaskButton" style="margin-top: 10px;">Add Task</button>
+      <ul id="taskList" style="padding-left: 20px;"></ul>
     </div>
   `;
     document.body.appendChild(container);
@@ -18,6 +41,8 @@
     const taskInput = container.querySelector('#taskInput');
     const addTaskButton = container.querySelector('#addTaskButton');
     const taskList = container.querySelector('#taskList');
+    const toggleButton = container.querySelector('#todo-toggle');
+    const todoBox = container.querySelector('#todo');
     let tasks = [];
 
     // Load tasks from localStorage if available
@@ -46,7 +71,6 @@
             const editButton = document.createElement('button');
             editButton.classList.add('edit');
             const editImg = document.createElement('img');
-            // Use chrome.runtime.getURL() to correctly load the icon from the extension directory
             editImg.src = chrome.runtime.getURL('images/icons8-edit-24.png');
             editImg.alt = 'Edit';
             editButton.appendChild(editImg);
@@ -56,7 +80,6 @@
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete');
             const deleteImg = document.createElement('img');
-            // Use chrome.runtime.getURL() to correctly load the icon from the extension directory
             deleteImg.src = chrome.runtime.getURL('images/icons8-delete-24.png');
             deleteImg.alt = 'Delete';
             deleteButton.appendChild(deleteImg);
@@ -93,6 +116,14 @@
             taskInput.value = '';
         }
     };
+
+    // Toggle minimize/maximize
+    let isVisible = true;
+    toggleButton.addEventListener('click', () => {
+        isVisible = !isVisible;
+        todoBox.style.display = isVisible ? 'block' : 'none';
+        toggleButton.textContent = isVisible ? '–' : '☰';
+    });
 
     addTaskButton.addEventListener('click', addTask);
     loadTasks();
