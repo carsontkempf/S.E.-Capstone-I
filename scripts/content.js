@@ -63,6 +63,11 @@
         taskList.innerHTML = '';
         tasks.forEach((task, index) => {
             const li = document.createElement('li');
+            // align buttons next to each other
+            li.style.display = 'flex';
+            li.style.alignItems = 'center';
+            li.style.gap = '0px';
+            li.style.justifyContent = 'flex-start';
 
             // Task text
             let textElement;
@@ -78,6 +83,9 @@
                 textElement.textContent = task.title;
             }
             li.appendChild(textElement);
+
+            // push buttons to the right
+            textElement.style.flex = '1';
 
             // Edit button
             const editButton = document.createElement('button');
