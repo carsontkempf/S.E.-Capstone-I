@@ -2,47 +2,9 @@
   const DEFAULT_VISIBILITY = false;
   const container = document.createElement('div');
   container.id = 'todo-container';
-
-  container.innerHTML = `
-  <div id="todo">
-      <div id="todo-header">
-      <div id="todo-toggle">☰</div>
-          <h1 style="margin: 0; text-align: center; font-size: 18px;">To-Do List</h1>
-      </div>
-      <div id="todo-body" style="padding: 10px; padding-bottom: 40px;">
-          <input type="text" id="taskInput" placeholder="Enter task name" style="width: 100%; display: none;" />
-          <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
-          <ul id="taskList" style="padding-left: 20px; margin-top: 10px;"></ul>
-      </div>
-      <button id="addTaskButton" title="Add Task" style="
-          position: absolute;
-          bottom: 10px;
-          right: 10px;
-          width: 32px;
-          height: 32px;
-          background-color: #333;
-          color: white;
-          font-size: 22px;
-          line-height: 0;
-          border-radius: 50%;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-      ">+</button>
-      <div id="resize-handle" style="
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 16px;
-        height: 16px;
-        background: #ccc;
-        cursor: se-resize;
-        z-index: 10;
-      "></div>
-  </div>
-  `;
+  const templateUrl = chrome.runtime.getURL('scripts/todo.html');
+  const templateHtml = await fetch(templateUrl).then(res => res.text());
+  container.innerHTML = templateHtml;
   document.body.appendChild(container);
 
   const taskInput = container.querySelector('#taskInput');
