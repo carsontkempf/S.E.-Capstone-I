@@ -153,26 +153,34 @@
 
   const handleAddButton = () => {
     if (!pendingOpen) {
-      taskInput.style.display = 'block';
-      urlInput.style.display = 'block';
-      addTaskButton.textContent = '✔';
-      taskInput.focus();
-      pendingOpen = true;
+        taskInput.style.display = 'block';
+        urlInput.style.display = 'block';
+        addTaskButton.textContent = '✔';
+        taskInput.focus();
+        pendingOpen = true;
     } else {
       const title = taskInput.value.trim();
       const url = urlInput.value.trim();
-      if (!title) return;
 
-      tasks.push({ title, url });
-      saveTasks();
-      renderTasks();
+      if (!title && !url) { // If both empty exit
+        taskInput.style.display = 'none';
+        urlInput.style.display = 'none';
+        addTaskButton.textContent = '+';
+        pendingOpen = false;
+      } else if (title) { // if title is set create task
+        tasks.push({ title, url });
+        saveTasks();
+        renderTasks();
 
-      taskInput.value = '';
-      urlInput.value = '';
-      taskInput.style.display = 'none';
-      urlInput.style.display = 'none';
-      addTaskButton.textContent = '+';
-      pendingOpen = false;
+        taskInput.value = '';
+        urlInput.value = '';
+        taskInput.style.display = 'none';
+        urlInput.style.display = 'none';
+        addTaskButton.textContent = '+';
+        pendingOpen = false;
+      } else if (url) { // if url has data but no title return
+        return;
+      }
     }
   };
 
