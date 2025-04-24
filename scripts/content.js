@@ -387,46 +387,16 @@
     });
   });
 
-  let isVisible = DEFAULT_VISIBILITY;
-  let resizeHeight = todoBox.style.height;
-  if (!isVisible) {
-    todoBody.style.display = 'none';
-    addTaskButton.style.display = 'none';
-    resizehandle.style.display = 'none';
-    toggleButton.textContent = '–';
-  }
-<<<<<<< HEAD
-  toggleButton.addEventListener('click', () => {
-    isVisible = !isVisible;
-    todoBody.style.display = isVisible ? 'block' : 'none';
-    addTaskButton.style.display = isVisible ? 'block' : 'none';
-    resizehandle.style.display = isVisible ? 'block' : 'none';
-    if (isVisible) todoBox.style.height = resizeHeight;
-    else (resizeHeight = todoBox.style.height), (todoBox.style.height = 'auto');
-    toggleButton.textContent = isVisible ? '☰' : '–';
-  });
-=======
-
-  toggleButton.addEventListener('click', () => {
-    isVisible = !isVisible;
-  
-    todoBody.style.display = isVisible ? 'block' : 'none';
-    addTaskButton.style.display = isVisible ? 'block' : 'none';
-    resizehandle.style.display = isVisible ? 'block' : 'none';
-  
-    if (isVisible) {
-      todoBox.style.height = resizeHeight;
-    } else {
-      // ===> Save current height for restoration and hide dashboard
-      resizeHeight = todoBox.style.height;
-      todoBox.style.height = 'auto';
-      dashboardPanel.style.display = 'none';
+    let isVisible = DEFAULT_VISIBILITY;
+    if (!isVisible) {
+        todoBody.style.display = 'none';
+        toggleButton.textContent = '–';
     }
-  
-    toggleButton.textContent = isVisible ? '☰' : '–';
-  });
-  
->>>>>>> e7fb3c3 (Changed emojis to icons)
+    toggleButton.addEventListener('click', () => {
+        isVisible = !isVisible;
+        todoBody.style.display = isVisible ? 'block' : 'none';
+        toggleButton.textContent = isVisible ? '☰' : '–';
+    });
 
   // Drag functionality
   let isDragging = false,
