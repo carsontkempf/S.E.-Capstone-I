@@ -1,4 +1,5 @@
 (async () => {
+    const DEFAULT_VISIBILITY = false;
     const container = document.createElement('div');
     container.id = 'todo-container';
 
@@ -201,7 +202,11 @@
         });
     });
 
-    let isVisible = true;
+    let isVisible = DEFAULT_VISIBILITY;
+    if (!isVisible) {
+        todoBody.style.display = 'none';
+        toggleButton.textContent = '–';
+    }
     toggleButton.addEventListener('click', () => {
         isVisible = !isVisible;
         todoBody.style.display = isVisible ? 'block' : 'none';
