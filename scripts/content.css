@@ -130,6 +130,8 @@
     box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
     border-radius: 8px;
     width: 300px;
+    min-width: 180px;
+    min-height: 54px;
     visibility: visible;
     overflow: auto;
 }

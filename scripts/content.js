@@ -3,7 +3,7 @@
   const container = document.createElement('div');
   container.id = 'todo-container';
   const templateUrl = chrome.runtime.getURL('scripts/todo.html');
-  const templateHtml = await fetch(templateUrl).then(res => res.text());
+  const templateHtml = await fetch(templateUrl).then((res) => res.text());
   container.innerHTML = templateHtml;
   document.body.appendChild(container);
 
@@ -197,20 +197,19 @@
   let isVisible = DEFAULT_VISIBILITY;
   let resizeHeight = todoBox.style.height;
   if (!isVisible) {
-      todoBody.style.display = 'none';
-      addTaskButton.style.display = 'none';
-      resizehandle.style.display = 'none';
-      toggleButton.textContent = '–';
+    todoBody.style.display = 'none';
+    addTaskButton.style.display = 'none';
+    resizehandle.style.display = 'none';
+    toggleButton.textContent = '–';
   }
   toggleButton.addEventListener('click', () => {
-      isVisible = !isVisible;
-      todoBody.style.display = isVisible ? 'block' : 'none';
-      addTaskButton.style.display = isVisible ? 'block' : 'none';
-      resizehandle.style.display = isVisible ? 'block' : 'none';
-      if (isVisible)
-        todoBox.style.height = resizeHeight;
-      else resizeHeight = todoBox.style.height, todoBox.style.height = 'auto';
-      toggleButton.textContent = isVisible ? '☰' : '–';
+    isVisible = !isVisible;
+    todoBody.style.display = isVisible ? 'block' : 'none';
+    addTaskButton.style.display = isVisible ? 'block' : 'none';
+    resizehandle.style.display = isVisible ? 'block' : 'none';
+    if (isVisible) todoBox.style.height = resizeHeight;
+    else (resizeHeight = todoBox.style.height), (todoBox.style.height = 'auto');
+    toggleButton.textContent = isVisible ? '☰' : '–';
   });
 
   // Drag functionality
@@ -226,7 +225,7 @@
     e.preventDefault();
     e.stopPropagation();
   });
-  
+
   todoHeader.addEventListener('mousedown', (e) => {
     isDragging = true;
     const rect = todoBox.getBoundingClientRect();
@@ -253,7 +252,6 @@
     isResizing = false;
   });
 
-  
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
