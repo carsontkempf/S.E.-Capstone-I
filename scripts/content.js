@@ -442,7 +442,6 @@
     isResizing = false;
   });
 
-  
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
