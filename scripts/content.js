@@ -337,11 +337,11 @@
 >>>>>>> Stashed changes
   const handleAddButton = () => {
     if (!pendingOpen) {
-      taskInput.style.display = 'block';
-      urlInput.style.display = 'block';
-      addTaskButton.textContent = '✔';
-      taskInput.focus();
-      pendingOpen = true;
+        taskInput.style.display = 'block';
+        urlInput.style.display = 'block';
+        addTaskButton.textContent = '✔';
+        taskInput.focus();
+        pendingOpen = true;
     } else {
       const title = taskInput.value.trim();
       const url = urlInput.value.trim();
