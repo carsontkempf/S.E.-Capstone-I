@@ -194,14 +194,20 @@
   });
 
   let isVisible = DEFAULT_VISIBILITY;
+  let resizeHeight = todoBox.style.height;
   if (!isVisible) {
     todoBody.style.display = 'none';
     toggleButton.textContent = '–';
   }
   toggleButton.addEventListener('click', () => {
-    isVisible = !isVisible;
-    todoBody.style.display = isVisible ? 'block' : 'none';
-    toggleButton.textContent = isVisible ? '☰' : '–';
+      isVisible = !isVisible;
+      todoBody.style.display = isVisible ? 'block' : 'none';
+      addTaskButton.style.display = isVisible ? 'block' : 'none';
+      resizehandle.style.display = isVisible ? 'block' : 'none';
+      if (isVisible)
+        todoBox.style.height = resizeHeight;
+      else resizeHeight = todoBox.style.height, todoBox.style.height = 'auto';
+      toggleButton.textContent = isVisible ? '☰' : '–';
   });
 
   // Drag functionality
