@@ -24,8 +24,9 @@
       "resources": [
         "images/*",
         "public/font/ProximaNova-Reg-webfont.woff2",
-        "public/font/ProximaNova-Bold-webfont.woff2"
-      ],
+        "public/font/ProximaNova-Bold-webfont.woff2",
+        "scripts/todo.html"
+        ],
       "matches": ["<all_urls>"]
     }
   ]
