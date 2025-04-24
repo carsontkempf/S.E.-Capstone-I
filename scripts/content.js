@@ -195,6 +195,7 @@
   });
 
   let isVisible = DEFAULT_VISIBILITY;
+  let resizeHeight = todoBox.style.height;
   if (!isVisible) {
       todoBody.style.display = 'none';
       addTaskButton.style.display = 'none';
@@ -206,6 +207,9 @@
       todoBody.style.display = isVisible ? 'block' : 'none';
       addTaskButton.style.display = isVisible ? 'block' : 'none';
       resizehandle.style.display = isVisible ? 'block' : 'none';
+      if (isVisible)
+        todoBox.style.height = resizeHeight;
+      else resizeHeight = todoBox.style.height, todoBox.style.height = 'auto';
       toggleButton.textContent = isVisible ? '☰' : '–';
   });
 
