@@ -390,11 +390,15 @@
     let isVisible = DEFAULT_VISIBILITY;
     if (!isVisible) {
         todoBody.style.display = 'none';
+        addTaskButton.style.display = 'none';
+        resizehandle.style.display = 'none';
         toggleButton.textContent = '–';
     }
     toggleButton.addEventListener('click', () => {
         isVisible = !isVisible;
         todoBody.style.display = isVisible ? 'block' : 'none';
+        addTaskButton.style.display = isVisible ? 'block' : 'none';
+        resizehandle.style.display = isVisible ? 'block' : 'none';
         toggleButton.textContent = isVisible ? '☰' : '–';
     });
 
@@ -438,6 +442,7 @@
     isResizing = false;
   });
 
+  
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
