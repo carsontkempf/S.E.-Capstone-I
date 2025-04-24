@@ -13,17 +13,6 @@
     visibility: hidden;
 }
 
-<<<<<<< HEAD:scripts/content.css
-#todo h1 {
-    margin: 0 0 0.5rem 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    font-size: 1.2rem;
-    color: #333;
-    border-bottom: none;
-}
-=======
->>>>>>> 2118579 (Re-organized files to have separate responsibilities):styles/todo.css
 
 #todo input[type="text"] {
     width: calc(100% - 12px);
