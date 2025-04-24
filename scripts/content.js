@@ -14,33 +14,8 @@
         border-radius: 8px;
         width: 300px;
     ">
-        <div id="todo-header" style="
-            position: relative;
-            padding: 10px;
-            cursor: move;
-            background: #f1f1f1;
-            border-bottom: 1px solid #ccc;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        ">
-        <div id="todo-toggle" style="
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 28px;
-            height: 28px;
-            background-color: #333;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        ">☰</div>
+        <div id="todo-header">
+        <div id="todo-toggle">☰</div>
             <h1 style="margin: 0; text-align: center; font-size: 18px;">To-Do List</h1>
         </div>
         <div id="todo-body" style="padding: 10px; padding-bottom: 40px;">
