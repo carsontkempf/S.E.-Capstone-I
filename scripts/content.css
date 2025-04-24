@@ -5,11 +5,12 @@
     right: 1rem;
     z-index: 9999;
     font-family: Arial, sans-serif;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 1rem;
     width: 300px;
+    visibility: hidden;
 }
 
 #todo h1 {
@@ -128,4 +129,5 @@
     box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
     border-radius: 8px;
     width: 300px;
+    visibility: visible;
 }
