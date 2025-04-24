@@ -1,48 +1,48 @@
 (async () => {
-    const DEFAULT_VISIBILITY = false;
-    const container = document.createElement('div');
-    container.id = 'todo-container';
+  const DEFAULT_VISIBILITY = false;
+  const container = document.createElement('div');
+  container.id = 'todo-container';
 
   container.innerHTML = `
-    <div id="todo">
-        <div id="todo-header">
-        <div id="todo-toggle">☰</div>
-            <h1 style="margin: 0; text-align: center; font-size: 18px;">To-Do List</h1>
-        </div>
-        <div id="todo-body" style="padding: 10px; padding-bottom: 40px;">
-            <input type="text" id="taskInput" placeholder="Enter task name" style="width: 100%; display: none;" />
-            <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
-            <ul id="taskList" style="padding-left: 20px; margin-top: 10px;"></ul>
-        </div>
-        <button id="addTaskButton" title="Add Task" style="
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 32px;
-            height: 32px;
-            background-color: #333;
-            color: white;
-            font-size: 22px;
-            line-height: 0;
-            border-radius: 50%;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        ">+</button>
-        <div id="resize-handle" style="
+  <div id="todo">
+      <div id="todo-header">
+      <div id="todo-toggle">☰</div>
+          <h1 style="margin: 0; text-align: center; font-size: 18px;">To-Do List</h1>
+      </div>
+      <div id="todo-body" style="padding: 10px; padding-bottom: 40px;">
+          <input type="text" id="taskInput" placeholder="Enter task name" style="width: 100%; display: none;" />
+          <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
+          <ul id="taskList" style="padding-left: 20px; margin-top: 10px;"></ul>
+      </div>
+      <button id="addTaskButton" title="Add Task" style="
           position: absolute;
-          bottom: 0;
-          right: 0;
-          width: 16px;
-          height: 16px;
-          background: #ccc;
-          cursor: se-resize;
-          z-index: 10;
-        "></div>
-    </div>
-    `;
+          bottom: 10px;
+          right: 10px;
+          width: 32px;
+          height: 32px;
+          background-color: #333;
+          color: white;
+          font-size: 22px;
+          line-height: 0;
+          border-radius: 50%;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+      ">+</button>
+      <div id="resize-handle" style="
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 16px;
+        height: 16px;
+        background: #ccc;
+        cursor: se-resize;
+        z-index: 10;
+      "></div>
+  </div>
+  `;
   document.body.appendChild(container);
 
   const taskInput = container.querySelector('#taskInput');
@@ -76,10 +76,28 @@
       li.style.gap = '0px';
       li.style.justifyContent = 'flex-start';
 
-      let textElement;
-      if (task.url) {
+      let textElement, destination, validUrl;
+
+      // Validate URLs
+      try {
+        new URL(task.url, location.origin);
+        validUrl = true;
+      } catch (e) {
+        validUrl = false;
+      }
+
+      if (task.url && validUrl) {
         textElement = document.createElement('a');
-        textElement.href = task.url;
+
+        // Parse a particular URL entry
+        try {
+          destination = new URL(task.url);
+        } catch (e) {
+          if (/\w\.\w/.test(task.url))
+            destination = new URL('https://' + task.url);
+          else destination = new URL(task.url, location.href);
+        }
+        textElement.href = destination;
         textElement.target = '_blank';
         textElement.textContent = task.title;
         textElement.style.textDecoration = 'none';
@@ -164,21 +182,23 @@
 
   const handleAddButton = () => {
     if (!pendingOpen) {
-        taskInput.style.display = 'block';
-        urlInput.style.display = 'block';
-        addTaskButton.textContent = '✔';
-        taskInput.focus();
-        pendingOpen = true;
+      taskInput.style.display = 'block';
+      urlInput.style.display = 'block';
+      addTaskButton.textContent = '✔';
+      taskInput.focus();
+      pendingOpen = true;
     } else {
       const title = taskInput.value.trim();
       const url = urlInput.value.trim();
 
-      if (!title && !url) { // If both empty exit
+      if (!title && !url) {
+        // If both empty exit
         taskInput.style.display = 'none';
         urlInput.style.display = 'none';
         addTaskButton.textContent = '+';
         pendingOpen = false;
-      } else if (title) { // if title is set create task
+      } else if (title) {
+        // if title is set create task
         tasks.push({ title, url });
         saveTasks();
         renderTasks();
@@ -189,7 +209,8 @@
         urlInput.style.display = 'none';
         addTaskButton.textContent = '+';
         pendingOpen = false;
-      } else if (url) { // if url has data but no title return
+      } else if (url) {
+        // if url has data but no title return
         return;
       }
     }
@@ -211,20 +232,20 @@
     });
   });
 
-    let isVisible = DEFAULT_VISIBILITY;
-    if (!isVisible) {
-        todoBody.style.display = 'none';
-        addTaskButton.style.display = 'none';
-        resizehandle.style.display = 'none';
-        toggleButton.textContent = '–';
-    }
-    toggleButton.addEventListener('click', () => {
-        isVisible = !isVisible;
-        todoBody.style.display = isVisible ? 'block' : 'none';
-        addTaskButton.style.display = isVisible ? 'block' : 'none';
-        resizehandle.style.display = isVisible ? 'block' : 'none';
-        toggleButton.textContent = isVisible ? '☰' : '–';
-    });
+  let isVisible = DEFAULT_VISIBILITY;
+  if (!isVisible) {
+      todoBody.style.display = 'none';
+      addTaskButton.style.display = 'none';
+      resizehandle.style.display = 'none';
+      toggleButton.textContent = '–';
+  }
+  toggleButton.addEventListener('click', () => {
+      isVisible = !isVisible;
+      todoBody.style.display = isVisible ? 'block' : 'none';
+      addTaskButton.style.display = isVisible ? 'block' : 'none';
+      resizehandle.style.display = isVisible ? 'block' : 'none';
+      toggleButton.textContent = isVisible ? '☰' : '–';
+  });
 
   // Drag functionality
   let isDragging = false,
