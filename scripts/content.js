@@ -1,6 +1,7 @@
 (async () => {
-  const container = document.createElement('div');
-  container.id = 'todo-container';
+    const DEFAULT_VISIBILITY = false;
+    const container = document.createElement('div');
+    container.id = 'todo-container';
 
   container.innerHTML = `
     <div id="todo">
@@ -191,12 +192,16 @@
     });
   });
 
-  let isVisible = true;
-  toggleButton.addEventListener('click', () => {
-    isVisible = !isVisible;
-    todoBody.style.display = isVisible ? 'block' : 'none';
-    toggleButton.textContent = isVisible ? '☰' : '–';
-  });
+    let isVisible = DEFAULT_VISIBILITY;
+    if (!isVisible) {
+        todoBody.style.display = 'none';
+        toggleButton.textContent = '–';
+    }
+    toggleButton.addEventListener('click', () => {
+        isVisible = !isVisible;
+        todoBody.style.display = isVisible ? 'block' : 'none';
+        toggleButton.textContent = isVisible ? '☰' : '–';
+    });
 
   // Drag functionality
   let isDragging = false,
