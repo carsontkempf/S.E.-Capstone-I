@@ -8,7 +8,7 @@ module.exports = {
     jsxSingleQuote: false, // Use double quotes in JSX
     trailingComma: 'es5', // Add trailing commas where valid in ES5 (objects, arrays, etc.)
     bracketSpacing: true, // Print spaces between brackets in object literals
-    bracketSameLine: false, // Put the `>` of a multi-line JSX element at the end of the last line
+    jsxBracketSameLine: false, // Put the `>` of a multi-line JSX element at the end of the last line
     arrowParens: 'always', // Always include parentheses around arrow function arguments
     htmlWhitespaceSensitivity: 'css', // Respect the default value of CSS display property
     endOfLine: 'lf', // Use line feed only (\n) for newlines
