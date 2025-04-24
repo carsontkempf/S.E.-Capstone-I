@@ -31,6 +31,16 @@
             justify-content: center;
             cursor: pointer;
         ">+</button>
+        <div id="resize-handle" style="
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 16px;
+          height: 16px;
+          background: #ccc;
+          cursor: se-resize;
+          z-index: 10;
+        "></div>
     </div>
     `;
   document.body.appendChild(container);
@@ -38,6 +48,7 @@
   const taskInput = container.querySelector('#taskInput');
   const urlInput = container.querySelector('#urlInput');
   const addTaskButton = container.querySelector('#addTaskButton');
+  const resizehandle = container.querySelector('#resize-handle');
   const taskList = container.querySelector('#taskList');
   const toggleButton = container.querySelector('#todo-toggle');
   const todoBox = container.querySelector('#todo');
@@ -203,11 +214,15 @@
     let isVisible = DEFAULT_VISIBILITY;
     if (!isVisible) {
         todoBody.style.display = 'none';
+        addTaskButton.style.display = 'none';
+        resizehandle.style.display = 'none';
         toggleButton.textContent = '–';
     }
     toggleButton.addEventListener('click', () => {
         isVisible = !isVisible;
         todoBody.style.display = isVisible ? 'block' : 'none';
+        addTaskButton.style.display = isVisible ? 'block' : 'none';
+        resizehandle.style.display = isVisible ? 'block' : 'none';
         toggleButton.textContent = isVisible ? '☰' : '–';
     });
 
@@ -215,6 +230,16 @@
   let isDragging = false,
     offsetX = 0,
     offsetY = 0;
+
+  const resizeHandle = container.querySelector('#resize-handle');
+  let isResizing = false;
+
+  resizeHandle.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  
   todoHeader.addEventListener('mousedown', (e) => {
     isDragging = true;
     const rect = todoBox.getBoundingClientRect();
@@ -230,12 +255,18 @@
       todoBox.style.bottom = 'auto';
       todoBox.style.right = 'auto';
     }
+    if (isResizing) {
+      todoBox.style.width = `${e.clientX - todoBox.getBoundingClientRect().left}px`;
+      todoBox.style.height = `${e.clientY - todoBox.getBoundingClientRect().top}px`;
+    }
   });
 
   document.addEventListener('mouseup', () => {
     isDragging = false;
+    isResizing = false;
   });
 
+  
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
