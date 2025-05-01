@@ -16,6 +16,7 @@
   const todoBox = container.querySelector('#todo');
   const todoBody = container.querySelector('#todo-body');
   const todoHeader = container.querySelector('#todo-header');
+  const dashboardButton = container.querySelector('#dashboardButton');
   let tasks = [];
   let pendingOpen = false;
 
@@ -141,6 +142,105 @@
       taskList.appendChild(li);
     });
   };
+
+  // TODO: Dashboard START
+  let dashboardLocked = true;
+  let dashboardDragging = false;
+  let dashOffsetX = 0, dashOffsetY = 0;
+  let relativeOffsetX = 0, relativeOffsetY = 0;
+  let dashboardOpen = false;
+
+  // Reference elements
+  const dashboardPanel = document.createElement('div');
+
+  // Style & create the dashboard
+  dashboardPanel.id = 'todo-dashboard';
+  dashboardPanel.style.cssText = `
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 9999;
+    display: none;
+    cursor: move;
+  `;
+
+  dashboardPanel.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0;">Dashboard</h3>
+      <div style="display: flex; gap: 5px;">
+        <button id="lockToggle" title="Lock Position" style="font-size: 14px;">🔒</button>
+        <button id="closeDashboard" style="font-size: 14px;">✖️</button>
+      </div>
+    </div>
+    <div id="dashboard-content" style="margin-top: 10px;">
+      <p>You can add widgets here later.</p>
+    </div>
+  `;
+  document.body.appendChild(dashboardPanel);
+
+  // Opens dashboard
+  dashboardButton.addEventListener('click', () => {
+    const buttonRect = dashboardButton.getBoundingClientRect();
+    dashboardPanel.style.left = `${buttonRect.right + 10}px`;
+    dashboardPanel.style.top = `${buttonRect.top}px`;
+    dashboardPanel.style.display = 'block';
+  });
+  
+  // Close Dashboard
+  closeDashboard.addEventListener('click', () => {
+    dashboardPanel.style.display = 'none';
+  });
+  
+  
+  lockToggle.addEventListener('click', () => {
+    dashboardLocked = !dashboardLocked;
+    lockToggle.textContent = dashboardLocked ? '🔒' : '🔓';
+    dashboardPanel.classList.toggle('moveable', !dashboardLocked);
+  
+    if (dashboardLocked) {
+      const todoRect = todoBox.getBoundingClientRect();
+      const dashRect = dashboardPanel.getBoundingClientRect();
+      relativeOffsetX = dashRect.left - todoRect.left;
+      relativeOffsetY = dashRect.top - todoRect.top;
+    }
+  });
+
+  // Move dashboard with todo box only if locked
+  new MutationObserver(() => {
+    if (dashboardLocked && dashboardPanel.style.display !== 'none') {
+      const todoBoxRect = todoBox.getBoundingClientRect();
+      dashboardPanel.style.left = `${todoBoxRect.left + relativeOffsetX}px`;
+      dashboardPanel.style.top = `${todoBoxRect.top + relativeOffsetY}px`;
+    }
+  }).observe(todoBox, { attributes: true, attributeFilter: ['style'] });
+
+
+  // Dashboard drag behavior when unlocked
+  dashboardPanel.addEventListener('mousedown', (e) => {
+    if (!dashboardLocked && e.target.tagName !== 'BUTTON') {
+      dashboardDragging = true;
+      dashOffsetX = e.clientX - dashboardPanel.getBoundingClientRect().left;
+      dashOffsetY = e.clientY - dashboardPanel.getBoundingClientRect().top;
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (dashboardDragging) {
+      dashboardPanel.style.left = `${e.clientX - dashOffsetX}px`;
+      dashboardPanel.style.top = `${e.clientY - dashOffsetY}px`;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    dashboardDragging = false;
+  });
+  // TODO: Dashboard END
 
   const handleAddButton = () => {
     if (!pendingOpen) {
