@@ -1,258 +1,311 @@
+// scripts/content.js
 (async () => {
   const DEFAULT_VISIBILITY = false;
+
+  // Create container
   const container = document.createElement('div');
   container.id = 'todo-container';
+
+  // Load main template
   const templateUrl = chrome.runtime.getURL('scripts/todo.html');
-  const templateHtml = await fetch(templateUrl).then((res) => res.text());
+  const templateHtml = await fetch(templateUrl).then(res => res.text());
   container.innerHTML = templateHtml;
   document.body.appendChild(container);
 
-  const taskInput = container.querySelector('#taskInput');
-  const urlInput = container.querySelector('#urlInput');
-  const addTaskButton = container.querySelector('#addTaskButton');
-  const resizehandle = container.querySelector('#resize-handle');
-  const taskList = container.querySelector('#taskList');
-  const toggleButton = container.querySelector('#todo-toggle');
-  const todoBox = container.querySelector('#todo');
-  const todoBody = container.querySelector('#todo-body');
-  const todoHeader = container.querySelector('#todo-header');
+  // Initialize elements
+  const taskInput       = container.querySelector('#taskInput');
+  const urlInput        = container.querySelector('#urlInput');
+  const addTaskButton   = container.querySelector('#addTaskButton');
+  const resizeHandle    = container.querySelector('#resize-handle');
+  const taskList        = container.querySelector('#taskList');
+  const toggleButton    = container.querySelector('#todo-toggle');
+  const dashboardButton = container.querySelector('#dashboardButton');
+  const todoBox         = container.querySelector('#todo');
+  const todoBody        = container.querySelector('#todo-body');
+  const todoHeader      = container.querySelector('#todo-header');
+
+  // Set stopwatch icon src
+  const dashboardIcon = dashboardButton.querySelector('img');
+  dashboardIcon.src = chrome.runtime.getURL('images/stopwatch.png');
+
+  // Storage-backed tasks
   let tasks = [];
-  let pendingOpen = false;
 
-  const loadTasks = async () => {
-    await chrome.storage.local.get('tasks').then((result) => {
-      tasks = result.tasks ? JSON.parse(result.tasks) : [];
-    });
-  };
+  async function loadTasks() {
+    const result = await chrome.storage.local.get('tasks');
+    tasks = result.tasks ? JSON.parse(result.tasks) : [];
+  }
 
-  const saveTasks = async () => {
-    chrome.storage.local.set({ tasks: JSON.stringify(tasks) });
-  };
+  async function saveTasks() {
+    await chrome.storage.local.set({ tasks: JSON.stringify(tasks) });
+  }
 
-  const renderTasks = () => {
+  function renderTasks() {
     taskList.innerHTML = '';
     tasks.forEach((task, index) => {
       const li = document.createElement('li');
       li.style.display = 'flex';
       li.style.alignItems = 'center';
-      li.style.gap = '0px';
-      li.style.justifyContent = 'flex-start';
+      li.style.justifyContent = 'space-between';
 
-      let textElement, destination, validUrl;
-
-      // Validate URLs
+      // title or link
+      let textEl, valid;
       try {
         new URL(task.url, location.origin);
-        validUrl = true;
-      } catch (e) {
-        validUrl = false;
+        valid = true;
+      } catch {
+        valid = false;
       }
-
-      if (task.url && validUrl) {
-        textElement = document.createElement('a');
-
-        // Parse a particular URL entry
-        try {
-          destination = new URL(task.url);
-        } catch (e) {
-          if (/\w\.\w/.test(task.url))
-            destination = new URL('https://' + task.url);
-          else destination = new URL(task.url, location.href);
-        }
-        textElement.href = destination;
-        textElement.target = '_blank';
-        textElement.textContent = task.title;
-        textElement.style.textDecoration = 'none';
-        textElement.style.color = 'inherit';
+      if (task.url && valid) {
+        textEl = document.createElement('a');
+        textEl.href = task.url.startsWith('http') ? task.url : 'https://' + task.url;
+        textEl.target = '_blank';
+        textEl.textContent = task.title;
       } else {
-        textElement = document.createElement('span');
-        textElement.textContent = task.title;
+        textEl = document.createElement('span');
+        textEl.textContent = task.title;
       }
-      textElement.style.flex = '1';
-      li.appendChild(textElement);
+      li.appendChild(textEl);
 
-      const editButton = document.createElement('button');
-      const editImg = document.createElement('img');
-      editImg.src = chrome.runtime.getURL('images/icons8-edit-24.png');
-      editImg.alt = 'Edit';
-      editButton.appendChild(editImg);
-      li.appendChild(editButton);
+      // edit button
+      const editBtn = document.createElement('button');
+      editBtn.innerHTML = `<img src="${chrome.runtime.getURL('images/icons8-edit-24.png')}" alt="Edit">`;
+      editBtn.addEventListener('click', () => editTask(index));
+      li.appendChild(editBtn);
 
-      const deleteButton = document.createElement('button');
-      const deleteImg = document.createElement('img');
-      deleteImg.src = chrome.runtime.getURL('images/icons8-delete-24.png');
-      deleteImg.alt = 'Delete';
-      deleteButton.appendChild(deleteImg);
-      li.appendChild(deleteButton);
-
-      deleteButton.addEventListener('click', () => {
+      // delete button
+      const delBtn = document.createElement('button');
+      delBtn.innerHTML = `<img src="${chrome.runtime.getURL('images/icons8-delete-24.png')}" alt="Delete">`;
+      delBtn.addEventListener('click', () => {
         tasks.splice(index, 1);
-        saveTasks();
-        renderTasks();
+        saveTasks().then(renderTasks);
       });
-
-      editButton.addEventListener('click', () => {
-        const inputTitle = document.createElement('input');
-        inputTitle.type = 'text';
-        inputTitle.value = task.title;
-        inputTitle.style.marginRight = '8px';
-
-        const inputUrl = document.createElement('input');
-        inputUrl.type = 'text';
-        inputUrl.value = task.url || '';
-        inputUrl.style.marginRight = '8px';
-
-        li.innerHTML = '';
-        li.appendChild(inputTitle);
-        li.appendChild(inputUrl);
-
-        const saveButton = document.createElement('button');
-        const saveImg = document.createElement('img');
-        saveImg.src = chrome.runtime.getURL('images/save_icon.png');
-        saveImg.alt = 'Save';
-        saveButton.appendChild(saveImg);
-        li.appendChild(saveButton);
-
-        const saveEdit = () => {
-          const newTitle = inputTitle.value.trim();
-          const newUrl = inputUrl.value.trim();
-          if (newTitle === '') {
-            tasks.splice(index, 1);
-          } else {
-            tasks[index] = { title: newTitle, url: newUrl };
-          }
-          saveTasks();
-          renderTasks();
-        };
-
-        saveButton.addEventListener('click', saveEdit);
-        inputTitle.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') saveEdit();
-          if (e.key === 'Escape') renderTasks();
-        });
-        inputUrl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') saveEdit();
-          if (e.key === 'Escape') renderTasks();
-        });
-
-        inputTitle.focus();
-      });
+      li.appendChild(delBtn);
 
       taskList.appendChild(li);
     });
-  };
+  }
 
-  const handleAddButton = () => {
-    if (!pendingOpen) {
-      taskInput.style.display = 'block';
-      urlInput.style.display = 'block';
-      addTaskButton.textContent = '✔';
+  function editTask(idx) {
+    const task = tasks[idx];
+    const newTitle = prompt('Edit title', task.title);
+    const newUrl   = prompt('Edit URL', task.url);
+    if (newTitle !== null) tasks[idx].title = newTitle.trim() || task.title;
+    if (newUrl   !== null) tasks[idx].url   = newUrl.trim();
+    saveTasks().then(renderTasks);
+  }
+
+  function handleAdd() {
+    if (!taskInput.style.display || taskInput.style.display === 'none') {
+      taskInput.style.display     = 'block';
+      urlInput.style.display      = 'block';
+      addTaskButton.textContent   = '✔';
       taskInput.focus();
-      pendingOpen = true;
     } else {
       const title = taskInput.value.trim();
-      const url = urlInput.value.trim();
-
-      if (!title && !url) {
-        // If both empty exit
-        taskInput.style.display = 'none';
-        urlInput.style.display = 'none';
-        addTaskButton.textContent = '+';
-        pendingOpen = false;
-      } else if (title) {
-        // if title is set create task
+      const url   = urlInput.value.trim();
+      if (title) {
         tasks.push({ title, url });
-        saveTasks();
-        renderTasks();
-
-        taskInput.value = '';
-        urlInput.value = '';
-        taskInput.style.display = 'none';
-        urlInput.style.display = 'none';
-        addTaskButton.textContent = '+';
-        pendingOpen = false;
-      } else if (url) {
-        // if url has data but no title return
-        return;
+        saveTasks().then(renderTasks);
       }
+      taskInput.value              = '';
+      urlInput.value               = '';
+      taskInput.style.display      = 'none';
+      urlInput.style.display       = 'none';
+      addTaskButton.textContent    = '+';
     }
-  };
-
-  // Enter/Escape key handling
-  [taskInput, urlInput].forEach((input) => {
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        handleAddButton();
-      } else if (e.key === 'Escape') {
-        taskInput.value = '';
-        urlInput.value = '';
-        taskInput.style.display = 'none';
-        urlInput.style.display = 'none';
-        addTaskButton.textContent = '+';
-        pendingOpen = false;
-      }
-    });
-  });
-
-  let isVisible = DEFAULT_VISIBILITY;
-  let resizeHeight = todoBox.style.height;
-  if (!isVisible) {
-    todoBody.style.display = 'none';
-    addTaskButton.style.display = 'none';
-    resizehandle.style.display = 'none';
-    toggleButton.textContent = '–';
   }
+
+  addTaskButton.addEventListener('click', handleAdd);
+
+  // Toggle visibility
+  let isVisible = DEFAULT_VISIBILITY;
   toggleButton.addEventListener('click', () => {
     isVisible = !isVisible;
-    todoBody.style.display = isVisible ? 'block' : 'none';
+    todoBody.style.display      = isVisible ? 'block' : 'none';
     addTaskButton.style.display = isVisible ? 'block' : 'none';
-    resizehandle.style.display = isVisible ? 'block' : 'none';
-    if (isVisible) todoBox.style.height = resizeHeight;
-    else (resizeHeight = todoBox.style.height), (todoBox.style.height = 'auto');
-    toggleButton.textContent = isVisible ? '☰' : '–';
+    resizeHandle.style.display  = isVisible ? 'block' : 'none';
+    toggleButton.textContent    = isVisible ? '☰' : '–';
   });
 
-  // Drag functionality
-  let isDragging = false,
-    offsetX = 0,
-    offsetY = 0;
-
-  const resizeHandle = container.querySelector('#resize-handle');
-  let isResizing = false;
-
-  resizeHandle.addEventListener('mousedown', (e) => {
-    isResizing = true;
-    e.preventDefault();
-    e.stopPropagation();
+  // Drag & resize
+  let dragging = false, resizing = false, offsetX = 0, offsetY = 0;
+  todoHeader.addEventListener('mousedown', e => {
+    dragging = true;
+    offsetX = e.clientX - todoBox.offsetLeft;
+    offsetY = e.clientY - todoBox.offsetTop;
   });
-
-  todoHeader.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    const rect = todoBox.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-      todoBox.style.left = `${e.clientX - offsetX}px`;
-      todoBox.style.top = `${e.clientY - offsetY}px`;
+  resizeHandle.addEventListener('mousedown', e => { resizing = true; e.stopPropagation(); });
+  document.addEventListener('mousemove', e => {
+    if (dragging) {
+      todoBox.style.left   = `${e.clientX - offsetX}px`;
+      todoBox.style.top    = `${e.clientY - offsetY}px`;
       todoBox.style.bottom = 'auto';
-      todoBox.style.right = 'auto';
+      todoBox.style.right  = 'auto';
     }
-    if (isResizing) {
-      todoBox.style.width = `${e.clientX - todoBox.getBoundingClientRect().left}px`;
+    if (resizing) {
+      todoBox.style.width  = `${e.clientX - todoBox.getBoundingClientRect().left}px`;
       todoBox.style.height = `${e.clientY - todoBox.getBoundingClientRect().top}px`;
     }
   });
+  document.addEventListener('mouseup', () => { dragging = false; resizing = false; });
 
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-    isResizing = false;
+  // -------- Dashboard Module --------
+  async function fetchTasks() {
+    const result = await chrome.storage.local.get('tasks');
+    return result.tasks ? JSON.parse(result.tasks) : [];
+  }
+
+  function createDashboardItem(task, index) {
+    const li = document.createElement('li');
+    li.className = 'dashboard-item';
+
+    // Title or link
+    const titleEl = task.url && task.url.trim()
+      ? Object.assign(document.createElement('a'), {
+          href: task.url.startsWith('http') ? task.url : `https://${task.url}`,
+          target: '_blank',
+          textContent: task.title,
+          className: 'dashboard-title'
+        })
+      : Object.assign(document.createElement('span'), {
+          textContent: task.title,
+          className: 'dashboard-title'
+        });
+    li.appendChild(titleEl);
+
+    // Timer input
+    const timerInput = Object.assign(document.createElement('input'), {
+      type: 'time',
+      className: 'dashboard-timer-input',
+      value: '00:00'
+    });
+    li.appendChild(timerInput);
+
+    // Start timer button
+    const startBtn = Object.assign(document.createElement('button'), {
+      textContent: 'Start Timer',
+      className: 'dashboard-start-btn'
+    });
+    li.appendChild(startBtn);
+
+    // Edit button
+    const editBtn = Object.assign(document.createElement('button'), {
+      innerHTML: `<img src="${chrome.runtime.getURL('images/icons8-edit-24.png')}" alt="Edit">`,
+      className: 'dashboard-edit-btn'
+    });
+    li.appendChild(editBtn);
+
+    // Delete button
+    const deleteBtn = Object.assign(document.createElement('button'), {
+      innerHTML: `<img src="${chrome.runtime.getURL('images/icons8-delete-24.png')}" alt="Delete">`,
+      className: 'dashboard-delete-btn'
+    });
+    li.appendChild(deleteBtn);
+
+    // Timer logic
+    let intervalId;
+    startBtn.addEventListener('click', () => {
+      if (intervalId) clearInterval(intervalId);
+      let [h, m] = timerInput.value.split(':').map(Number);
+      let totalSeconds = h * 3600 + m * 60;
+      intervalId = setInterval(() => {
+        if (totalSeconds <= 0) {
+          clearInterval(intervalId);
+          alert(`Timer finished for "${task.title}"`);
+        } else {
+          totalSeconds--;
+          const hh = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+          const mm = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+          timerInput.value = `${hh}:${mm}`;
+        }
+      }, 1000);
+    });
+
+    // Edit functionality
+    editBtn.onclick = () => {
+      const newTitle = prompt('Edit title', task.title);
+      const newUrl   = prompt('Edit URL', task.url);
+      if (newTitle !== null) tasks[index].title = newTitle.trim() || task.title;
+      if (newUrl   !== null) tasks[index].url   = newUrl.trim();
+      saveTasks().then(() => { renderDashboardTasks(); renderTasks(); });
+    };
+
+    // Delete functionality
+    deleteBtn.onclick = () => {
+      tasks.splice(index, 1);
+      saveTasks().then(() => { renderDashboardTasks(); renderTasks(); });
+    };
+
+    return li;
+  }
+
+  async function renderDashboardTasks() {
+    const dashboardList = document.querySelector('#dashboard-taskList');
+    dashboardList.innerHTML = '';
+    const allTasks = await fetchTasks();
+    allTasks.forEach((task, idx) => {
+      dashboardList.appendChild(createDashboardItem(task, idx));
+    });
+  }
+
+  // ----- Dashboard open handler -----
+  function openDashboard() {
+    // avoid duplicates
+    if (document.getElementById('todo-dashboard')) return;
+
+    // hide base widget
+    todoBox.style.display = 'none';
+
+    // build dashboard overlay
+    const dash = document.createElement('div');
+    dash.id = 'todo-dashboard';
+    dash.innerHTML = `
+      <div id="dashboard-header">
+        <button id="dashboard-close">✕</button>
+        <h1 style="margin:0;text-align:center;font-size:18px;">To‑Do Dashboard</h1>
+      </div>
+      <div id="dashboard-body" style="padding:10px;padding-bottom:40px;">
+        <ul id="dashboard-taskList" style="padding-left:0;margin-top:10px;"></ul>
+      </div>`;
+    document.body.appendChild(dash);
+
+    // make dashboard draggable
+    const dashHeader = dash.querySelector('#dashboard-header');
+    let dDragging = false, dOffX = 0, dOffY = 0;
+    dashHeader.addEventListener('mousedown', (e) => {
+      dDragging = true;
+      const rect = dash.getBoundingClientRect();
+      dOffX = e.clientX - rect.left;
+      dOffY = e.clientY - rect.top;
+      dash.style.transform = 'none'; // disable centering transform once moved
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (dDragging) {
+        dash.style.left = `${e.clientX - dOffX}px`;
+        dash.style.top  = `${e.clientY - dOffY}px`;
+      }
+    });
+    document.addEventListener('mouseup', () => { dDragging = false; });
+
+    // populate tasks
+    renderDashboardTasks();
+  }
+
+  dashboardButton.addEventListener('click', openDashboard);
+  // ----- end handler -----
+
+  // Close dashboard handler
+  document.body.addEventListener('click', (e) => {
+    if (e.target.id === 'dashboard-close') {
+      document.getElementById('todo-dashboard')?.remove();
+      todoBox.style.display = 'block'; // re‑show base widget
+    }
   });
+  // -------- End Dashboard Module --------
 
-  addTaskButton.addEventListener('click', handleAddButton);
+  // Initial load
   await loadTasks();
   renderTasks();
 })();
