@@ -143,6 +143,7 @@
     });
   };
 
+
   // TODO: Dashboard START
   let dashboardLocked = true;
   let dashboardDragging = false;
@@ -177,8 +178,15 @@
         <button id="closeDashboard" style="font-size: 14px;">✖️</button>
       </div>
     </div>
-    <div id="dashboard-content" style="margin-top: 10px;">
-      <p>You can add widgets here later.</p>
+    <div id="dashboard-content" style="margin-top: 10px; display: flex; flex-direction: column; gap: 15px;">
+      <!-- Timer Panel -->
+      <div id="timer-panel" style="border: 1px solid #ccc; padding: 10px; border-radius: 6px;">
+        <h4 style="margin-top: 0;">Timers</h4>
+        <input id="timer-name" type="text" placeholder="Timer Name" style="width: 100%; margin-bottom: 5px;" />
+        <input id="timer-minutes" type="number" placeholder="Minutes" min="1" style="width: 100%; margin-bottom: 5px;" />
+        <button id="start-timer-btn" style="width: 100%; margin-bottom: 10px;">Start Timer</button>
+        <ul id="timer-list" style="list-style: none; padding-left: 0;"></ul>
+      </div>
     </div>
   `;
   document.body.appendChild(dashboardPanel);
@@ -195,7 +203,6 @@
   closeDashboard.addEventListener('click', () => {
     dashboardPanel.style.display = 'none';
   });
-  
   
   lockToggle.addEventListener('click', () => {
     dashboardLocked = !dashboardLocked;
@@ -355,4 +362,103 @@
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
+
+
+  // TIMER LOGIC
+  const startTimerBtn = document.getElementById('start-timer-btn');
+  const timerList = document.getElementById('timer-list');
+  
+  let timers = [];
+  
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}m ${s}s`;
+  };
+  
+  const renderTimers = () => {
+    timerList.innerHTML = '';
+  
+    timers.forEach((timer, index) => {
+      const li = document.createElement('li');
+      li.style.display = 'flex';
+      li.style.flexDirection = 'column';
+      li.style.marginBottom = '10px';
+      li.style.border = '1px solid #ccc';
+      li.style.borderRadius = '5px';
+      li.style.padding = '5px';
+  
+      const label = document.createElement('div');
+      label.textContent = `${timer.name}: ${formatTime(timer.remaining)}`;
+      label.style.fontWeight = 'bold';
+      li.appendChild(label);
+  
+      const controls = document.createElement('div');
+      controls.style.display = 'flex';
+      controls.style.gap = '5px';
+      controls.style.marginTop = '5px';
+  
+      const pauseBtn = document.createElement('button');
+      pauseBtn.textContent = timer.paused ? '▶ Resume' : '⏸ Pause';
+      pauseBtn.addEventListener('click', () => {
+        if (timer.paused) {
+          timer.paused = false;
+          timer.interval = setInterval(() => tickTimer(timer), 1000);
+        } else {
+          timer.paused = true;
+          clearInterval(timer.interval);
+        }
+        renderTimers();
+      });
+  
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = '✖ Cancel';
+      cancelBtn.addEventListener('click', () => {
+        clearInterval(timer.interval);
+        timers.splice(index, 1);
+        renderTimers();
+      });
+  
+      controls.appendChild(pauseBtn);
+      controls.appendChild(cancelBtn);
+      li.appendChild(controls);
+      timerList.appendChild(li);
+    });
+  };
+  
+  const tickTimer = (timer) => {
+    if (timer.paused) return;
+    timer.remaining--;
+    if (timer.remaining <= 0) {
+      clearInterval(timer.interval);
+      timer.remaining = 0;
+      alert(`"${timer.name}" has completed!`);
+    }
+    renderTimers();
+  };
+  
+  startTimerBtn.addEventListener('click', () => {
+    const name = document.getElementById('timer-name').value.trim();
+    const minutes = parseInt(document.getElementById('timer-minutes').value.trim());
+  
+    if (!name || isNaN(minutes) || minutes <= 0) {
+      alert('Enter a valid timer name and duration.');
+      return;
+    }
+  
+    const totalSeconds = minutes * 60;
+    const timer = {
+      name,
+      remaining: totalSeconds,
+      paused: false,
+      interval: null,
+    };
+  
+    timer.interval = setInterval(() => tickTimer(timer), 1000);
+    timers.push(timer);
+    renderTimers();
+  
+    document.getElementById('timer-name').value = '';
+    document.getElementById('timer-minutes').value = '';
+  });
 })();
