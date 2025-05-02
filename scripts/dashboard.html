@@ -1,10 +1,20 @@
-<!-- scripts/dashboard.html -->
 <div id="todo-dashboard">
-  <div id="dashboard-header">
-    <button id="dashboard-close">✕</button>
-    <h1 style="margin:0;text-align:center;font-size:18px;">To‑Do Dashboard</h1>
+  <div id="dashboard-header" style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button id="lockToggle" title="Lock Position" style="font-size: 14px;">🔒</button>
+      <button id="dashboard-close">✕</button>
+    </div>
+    <h1 style="margin:0;text-align:center;font-size:18px;">To-Do Dashboard</h1>
   </div>
-  <div id="dashboard-body" style="padding:10px;padding-bottom:40px;">
-    <ul id="dashboard-taskList" style="padding-left:0;margin-top:10px;"></ul>
+
+  <!-- Timer Panel -->
+  <div id="dashboard-body">
+    <div id="timer-panel" style="border: 1px solid #ccc; padding: 10px; border-radius: 6px;">
+      <h4 style="margin-top: 0;">Timers</h4>
+      <input id="timer-name" type="text" placeholder="Timer Name" style="width: 100%; margin-bottom: 5px;" />
+      <input id="timer-minutes" type="number" placeholder="Minutes" min="1" style="width: 100%; margin-bottom: 5px;" />
+      <button id="start-timer-btn" style="width: 100%; margin-bottom: 10px;">Start Timer</button>
+      <ul id="timer-list" style="list-style: none; padding-left: 0;"></ul>
+    </div>
   </div>
 </div>

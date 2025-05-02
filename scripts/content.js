@@ -12,36 +12,18 @@
   container.innerHTML = templateHtml;
   document.body.appendChild(container);
 
-<<<<<<< HEAD
-  // Initialize elements
-  const taskInput       = container.querySelector('#taskInput');
-  const urlInput        = container.querySelector('#urlInput');
-  const addTaskButton   = container.querySelector('#addTaskButton');
-  const resizeHandle    = container.querySelector('#resize-handle');
-  const taskList        = container.querySelector('#taskList');
-  const toggleButton    = container.querySelector('#todo-toggle');
-  const dashboardButton = container.querySelector('#dashboardButton');
-  const todoBox         = container.querySelector('#todo');
-  const todoBody        = container.querySelector('#todo-body');
-  const todoHeader      = container.querySelector('#todo-header');
-
-  // Set stopwatch icon src
-  const dashboardIcon = dashboardButton.querySelector('img');
-  dashboardIcon.src = chrome.runtime.getURL('images/stopwatch.png');
-
-  // Storage-backed tasks
-=======
   const taskInput = container.querySelector('#taskInput');
   const urlInput = container.querySelector('#urlInput');
   const addTaskButton = container.querySelector('#addTaskButton');
-  const resizehandle = container.querySelector('#resize-handle');
+  const resizeHandle = container.querySelector('#resize-handle');
   const taskList = container.querySelector('#taskList');
   const toggleButton = container.querySelector('#todo-toggle');
   const todoBox = container.querySelector('#todo');
   const todoBody = container.querySelector('#todo-body');
   const todoHeader = container.querySelector('#todo-header');
   const dashboardButton = container.querySelector('#dashboardButton');
->>>>>>> 015cd3a1ee4e9ddecc7165b5d7ef9b09d7e80cd8
+  const dashboardIcon = dashboardButton.querySelector('img');
+  dashboardIcon.src = chrome.runtime.getURL('images/stopwatch.png');
   let tasks = [];
 
   async function loadTasks() {
@@ -99,25 +81,9 @@
     });
   }
 
-<<<<<<< HEAD
-  function editTask(idx) {
-    const task = tasks[idx];
-    const newTitle = prompt('Edit title', task.title);
-    const newUrl   = prompt('Edit URL', task.url);
-    if (newTitle !== null) tasks[idx].title = newTitle.trim() || task.title;
-    if (newUrl   !== null) tasks[idx].url   = newUrl.trim();
-    saveTasks().then(renderTasks);
-  }
-
-  function handleAdd() {
-    if (!taskInput.style.display || taskInput.style.display === 'none') {
-      taskInput.style.display     = 'block';
-      urlInput.style.display      = 'block';
-      addTaskButton.textContent   = '✔';
-=======
 
   // TODO: Dashboard START
-  let dashboardLocked = true;
+  let dashboardLocked = false;
   let dashboardDragging = false;
   let dashOffsetX = 0, dashOffsetY = 0;
   let relativeOffsetX = 0, relativeOffsetY = 0;
@@ -125,43 +91,50 @@
 
   // Reference elements
   const dashboardPanel = document.createElement('div');
-
-  // Style & create the dashboard
+  // style & position dashboard panel
   dashboardPanel.id = 'todo-dashboard';
   dashboardPanel.style.cssText = `
     position: absolute;
     width: 300px;
-    height: 300px;
-    background: white;
+    max-width: 90%;
+    background: #fff;
     border: 1px solid #ccc;
-    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     border-radius: 8px;
     padding: 10px;
-    z-index: 9999;
+    z-index: 10001;
     display: none;
     cursor: move;
   `;
-
-  dashboardPanel.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="margin: 0;">Dashboard</h3>
-      <div style="display: flex; gap: 5px;">
-        <button id="lockToggle" title="Lock Position" style="font-size: 14px;">🔒</button>
-        <button id="closeDashboard" style="font-size: 14px;">✖️</button>
-      </div>
-    </div>
-    <div id="dashboard-content" style="margin-top: 10px; display: flex; flex-direction: column; gap: 15px;">
-      <!-- Timer Panel -->
-      <div id="timer-panel" style="border: 1px solid #ccc; padding: 10px; border-radius: 6px;">
-        <h4 style="margin-top: 0;">Timers</h4>
-        <input id="timer-name" type="text" placeholder="Timer Name" style="width: 100%; margin-bottom: 5px;" />
-        <input id="timer-minutes" type="number" placeholder="Minutes" min="1" style="width: 100%; margin-bottom: 5px;" />
-        <button id="start-timer-btn" style="width: 100%; margin-bottom: 10px;">Start Timer</button>
-        <ul id="timer-list" style="list-style: none; padding-left: 0;"></ul>
-      </div>
-    </div>
-  `;
+  // Load dashboard template
+  const dashboardUrl = chrome.runtime.getURL('scripts/dashboard.html');
+  let dashboardHtml = await fetch(dashboardUrl).then(res => res.text());
+  // Remove only the opening wrapper tag for id="todo-dashboard" in the fetched template HTML
+  dashboardHtml = dashboardHtml.replace(/^<div\s+id=["']todo-dashboard["'][^>]*>/, '');
+  dashboardPanel.innerHTML = dashboardHtml;
   document.body.appendChild(dashboardPanel);
+
+  // Reference new controls
+  const closeDashboard = dashboardPanel.querySelector('#dashboard-close');
+  const lockToggle = dashboardPanel.querySelector('#lockToggle');
+  const startTimerBtn = dashboardPanel.querySelector('#start-timer-btn');
+  const timerNameInput = dashboardPanel.querySelector('#timer-name');
+  const timerMinutesInput = dashboardPanel.querySelector('#timer-minutes');
+  const timerList = dashboardPanel.querySelector('#timer-list');
+
+  // Enforce only letters and spaces in timer name
+  timerNameInput.setAttribute('maxlength', '50');
+  timerNameInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+  });
+
+  // Enforce only numbers in minutes input
+  timerMinutesInput.setAttribute('min', '0');
+  timerMinutesInput.setAttribute('step', '1');
+  timerMinutesInput.addEventListener('input', (e) => {
+    // Remove non-digit characters
+    e.target.value = e.target.value.replace(/\D+/g, '');
+  });
 
   // Opens dashboard
   dashboardButton.addEventListener('click', () => {
@@ -201,11 +174,13 @@
 
   // Dashboard drag behavior when unlocked
   dashboardPanel.addEventListener('mousedown', (e) => {
-    if (!dashboardLocked && e.target.tagName !== 'BUTTON') {
+    // drag only when clicking on header area
+    if (!dashboardLocked && e.target.closest('#dashboard-header')) {
       dashboardDragging = true;
-      dashOffsetX = e.clientX - dashboardPanel.getBoundingClientRect().left;
-      dashOffsetY = e.clientY - dashboardPanel.getBoundingClientRect().top;
-      e.preventDefault();
+      // use offsetLeft/offsetTop for correct initial position
+      dashOffsetX = e.clientX - dashboardPanel.offsetLeft;
+      dashOffsetY = e.clientY - dashboardPanel.offsetTop;
+      e.preventDefault(); // prevent focus shift/jumping
     }
   });
 
@@ -226,7 +201,6 @@
       taskInput.style.display = 'block';
       urlInput.style.display = 'block';
       addTaskButton.textContent = '✔';
->>>>>>> 015cd3a1ee4e9ddecc7165b5d7ef9b09d7e80cd8
       taskInput.focus();
     } else {
       const title = taskInput.value.trim();
@@ -243,11 +217,15 @@
     }
   }
 
-  addTaskButton.addEventListener('click', handleAdd);
+  addTaskButton.addEventListener('click', handleAddButton);
 
   // Toggle visibility
   let isVisible = DEFAULT_VISIBILITY;
   toggleButton.addEventListener('click', () => {
+    // ensure dashboard is closed when toggling todo
+    if (dashboardPanel && dashboardPanel.style.display === 'block') {
+      dashboardPanel.style.display = 'none';
+    }
     isVisible = !isVisible;
     todoBody.style.display      = isVisible ? 'block' : 'none';
     addTaskButton.style.display = isVisible ? 'block' : 'none';
@@ -368,7 +346,8 @@
   }
 
   async function renderDashboardTasks() {
-    const dashboardList = document.querySelector('#dashboard-taskList');
+    const dashboardList = dashboardPanel.querySelector('#dashboard-taskList');
+    if (!dashboardList) return;
     dashboardList.innerHTML = '';
     const allTasks = await fetchTasks();
     allTasks.forEach((task, idx) => {
@@ -378,49 +357,19 @@
 
   // ----- Dashboard open handler -----
   function openDashboard() {
-    // avoid duplicates
-    if (document.getElementById('todo-dashboard')) return;
-
-    // hide base widget
+    // Just show the dashboard panel if hidden
+    dashboardPanel.style.display = 'block';
+    // Optionally hide the todo widget
     todoBox.style.display = 'none';
-
-    // build dashboard overlay
-    const dash = document.createElement('div');
-    dash.id = 'todo-dashboard';
-    dash.innerHTML = `
-      <div id="dashboard-header">
-        <button id="dashboard-close">✕</button>
-        <h1 style="margin:0;text-align:center;font-size:18px;">To‑Do Dashboard</h1>
-      </div>
-      <div id="dashboard-body" style="padding:10px;padding-bottom:40px;">
-        <ul id="dashboard-taskList" style="padding-left:0;margin-top:10px;"></ul>
-      </div>`;
-    document.body.appendChild(dash);
-
-    // make dashboard draggable
-    const dashHeader = dash.querySelector('#dashboard-header');
-    let dDragging = false, dOffX = 0, dOffY = 0;
-    dashHeader.addEventListener('mousedown', (e) => {
-      dDragging = true;
-      const rect = dash.getBoundingClientRect();
-      dOffX = e.clientX - rect.left;
-      dOffY = e.clientY - rect.top;
-      dash.style.transform = 'none'; // disable centering transform once moved
-      e.preventDefault();
-    });
-    document.addEventListener('mousemove', (e) => {
-      if (dDragging) {
-        dash.style.left = `${e.clientX - dOffX}px`;
-        dash.style.top  = `${e.clientY - dOffY}px`;
-      }
-    });
-    document.addEventListener('mouseup', () => { dDragging = false; });
-
-    // populate tasks
-    renderDashboardTasks();
+    // Render dashboard tasks if needed
+    // renderDashboardTasks();
   }
 
-  dashboardButton.addEventListener('click', openDashboard);
+  dashboardButton.addEventListener('click', () => {
+    // close todo popup when opening dashboard
+    todoBox.style.display = 'none';
+    openDashboard();
+  });
   // ----- end handler -----
 
   // Close dashboard handler
@@ -435,14 +384,9 @@
   // Initial load
   await loadTasks();
   renderTasks();
-<<<<<<< HEAD
-})();
-=======
 
 
   // TIMER LOGIC
-  const startTimerBtn = document.getElementById('start-timer-btn');
-  const timerList = document.getElementById('timer-list');
   
   let timers = [];
   
@@ -514,14 +458,14 @@
   };
   
   startTimerBtn.addEventListener('click', () => {
-    const name = document.getElementById('timer-name').value.trim();
-    const minutes = parseInt(document.getElementById('timer-minutes').value.trim());
-  
+    const name = timerNameInput.value.trim();
+    const minutes = parseInt(timerMinutesInput.value.trim());
+
     if (!name || isNaN(minutes) || minutes <= 0) {
       alert('Enter a valid timer name and duration.');
       return;
     }
-  
+
     const totalSeconds = minutes * 60;
     const timer = {
       name,
@@ -529,13 +473,12 @@
       paused: false,
       interval: null,
     };
-  
+
     timer.interval = setInterval(() => tickTimer(timer), 1000);
     timers.push(timer);
     renderTimers();
-  
-    document.getElementById('timer-name').value = '';
-    document.getElementById('timer-minutes').value = '';
+
+    timerNameInput.value = '';
+    timerMinutesInput.value = '';
   });
 })();
->>>>>>> 015cd3a1ee4e9ddecc7165b5d7ef9b09d7e80cd8
