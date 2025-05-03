@@ -4,27 +4,39 @@
   <div id="todo-toggle">☰</div>
       <h1 style="margin: 0; text-align: center; font-size: 18px;">To-Do List</h1>
   </div>
-  <div id="todo-body" style="padding: 10px; padding-bottom: 40px;">
-      <input type="text" id="taskInput" placeholder="Enter task name" style="width: 100%; display: none;" />
-      <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
-      <ul id="taskList" style="padding-left: 20px; margin-top: 10px;"></ul>
-  </div>
+  <button id="dashboardButton" title="Open Dashboard" style="
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+  ">
+    <img src="images/clock.png" alt="Dashboard" style="width: 24px; height: 24px;" />
+  </button>
+  <div id="todo-body" style="padding: 10px; overflow-y: auto; flex: 1;">
+    <input type="text" id="taskInput" placeholder="Enter task name" style="width: 100%; display: none;" />
+    <input type="text" id="urlInput" placeholder="Enter task URL" style="width: 100%; margin-top: 5px; display: none;" />
+    <ul id="taskList" style="padding-left: 20px; margin-top: 10px;"></ul>
+  </div>  
   <button id="addTaskButton" title="Add Task" style="
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      width: 32px;
-      height: 32px;
-      background-color: #333;
-      color: white;
-      font-size: 22px;
-      line-height: 0;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background-color: #333;
+    color: white;
+    font-size: 22px;
+    line-height: 0;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   ">+</button>
   <div id="resize-handle" style="
     position: absolute;
@@ -36,4 +48,8 @@
     cursor: se-resize;
     z-index: 10;
   "></div>
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> e7fb3c3 (Changed emojis to icons)
