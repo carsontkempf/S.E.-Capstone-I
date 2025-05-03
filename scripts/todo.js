@@ -5,7 +5,7 @@
   const templateUrl = chrome.runtime.getURL('templates/todo.html');
   const templateHtml = await fetch(templateUrl).then((res) => res.text());
   container.innerHTML = templateHtml;
-  
+
   document.body.appendChild(container);
 
   const taskInput = container.querySelector('#taskInput');
@@ -102,6 +102,7 @@
         li.appendChild(inputUrl);
 
         const saveButton = document.createElement('button');
+        saveButton.classList.add('save');  
         const saveImg = document.createElement('img');
         saveImg.src = chrome.runtime.getURL('images/checkmark.png');
         saveImg.alt = 'Confirm';
@@ -150,7 +151,6 @@
   dashboardButton.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('dashboard-open'));
   });
-
 
   // wait until an element matching selector exists in DOM
   async function waitForElement(selector) {
@@ -240,7 +240,7 @@
 
   toggleButton.addEventListener('click', () => {
     isVisible = !isVisible;
-  
+
     if (isVisible) {
       todoBox.classList.remove('collapsed');
       todoBody.style.display = 'block';
@@ -268,10 +268,9 @@
       todoBox.style.minHeight = '';
       todoBox.classList.add('collapsed');
     }
-  
+
     toggleButton.textContent = isVisible ? '☰' : '–';
   });
-  
 
   // Drag functionality
   let isDragging = false,
@@ -283,6 +282,9 @@
 
   resizeHandle.addEventListener('mousedown', (e) => {
     isResizing = true;
+    // clear any previously‑locked minimums so the box can shrink again
+    todoBox.style.minWidth = '';
+    todoBox.style.minHeight = '';
     todoBox.classList.add('resizing');
     // lock position for resize: fix current location
     const rect = todoBox.getBoundingClientRect();
@@ -330,5 +332,4 @@
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
-  
 })();
