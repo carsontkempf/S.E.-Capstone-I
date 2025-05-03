@@ -1,14 +1,12 @@
+// scripts/dashboard.js
 (async () => {
   // Load dashboard template
   const dashboardUrl = chrome.runtime.getURL('templates/dashboard.html');
   const dashboardPanel = document.createElement('div');
   dashboardPanel.id = 'todo-dashboard';
-  const dashboardHtml = await fetch(dashboardUrl).then((res) => res.text());
+  const dashboardHtml = await fetch(dashboardUrl).then(res => res.text());
   dashboardPanel.innerHTML = dashboardHtml;
   document.body.appendChild(dashboardPanel);
-
-  // sound to play when a timer completes
-  const chime = new Audio(chrome.runtime.getURL('sounds/slot_machine_payout.wav'));
 
   // TIMER LOGIC
   const startTimerBtn = document.getElementById('start-timer-btn');
@@ -42,35 +40,61 @@
       controls.style.gap = '5px';
       controls.style.marginTop = '5px';
 
-      const pauseBtn = document.createElement('button');
-      pauseBtn.textContent =
-        timer.paused && timer.remaining === timer.initialDuration
-          ? '▶ Start'
-          : timer.paused
-            ? '▶ Resume'
-            : '⏸ Pause';
-      pauseBtn.addEventListener('click', () => {
-        if (timer.paused) {
-          timer.paused = false;
-          timer.interval = setInterval(() => tickTimer(timer), 1000);
-        } else {
-          timer.paused = true;
+      if (timer.completed) {
+        // Delete button (same as cancel)
+        const deleteBtn = document.createElement('button');
+        const deleteImg = document.createElement('img');
+        deleteImg.src = chrome.runtime.getURL('images/delete_icon.png');
+        deleteImg.alt = 'Delete';
+        deleteBtn.appendChild(deleteImg);
+        deleteBtn.addEventListener('click', () => {
           clearInterval(timer.interval);
-        }
-        renderTimers();
-      });
+          timers.splice(index, 1);
+          renderTimers();
+        });
 
-      const cancelBtn = document.createElement('button');
-      cancelBtn.textContent = '✖ Delete';
-      cancelBtn.addEventListener('click', () => {
-        clearInterval(timer.interval);
-        timers.splice(index, 1);
-        renderTimers();
-      });
+        // Restart button
+        const restartBtn = document.createElement('button');
+        const restartImg = document.createElement('img');
+        restartImg.src = chrome.runtime.getURL('images/restart_icon.png');
+        restartImg.alt = 'Restart';
+        restartBtn.appendChild(restartImg);
+        restartBtn.addEventListener('click', () => {
+          timer.remaining = timer.initialDuration;
+          timer.paused = false;
+          timer.completed = false;
+          timer.interval = setInterval(() => tickTimer(timer), 1000);
+          renderTimers();
+        });
 
-      controls.appendChild(pauseBtn);
-      controls.appendChild(cancelBtn);
+        controls.appendChild(restartBtn);
+        controls.appendChild(deleteBtn);
+        return;  // skip the normal pause/cancel below
+      } else {
+        const pauseBtn = document.createElement('button');
+        pauseBtn.textContent = timer.paused ? '▶ Resume' : '⏸ Pause';
+        pauseBtn.addEventListener('click', () => {
+          if (timer.paused) {
+            timer.paused = false;
+            timer.interval = setInterval(() => tickTimer(timer), 1000);
+          } else {
+            timer.paused = true;
+            clearInterval(timer.interval);
+          }
+          renderTimers();
+        });
 
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = '✖ Cancel';
+        cancelBtn.addEventListener('click', () => {
+          clearInterval(timer.interval);
+          timers.splice(index, 1);
+          renderTimers();
+        });
+
+        controls.appendChild(pauseBtn);
+        controls.appendChild(cancelBtn);
+      }
       li.appendChild(controls);
       timerList.appendChild(li);
     });
@@ -81,45 +105,18 @@
     timer.remaining--;
     if (timer.remaining <= 0) {
       clearInterval(timer.interval);
-
-      // attempt to play alarm, then show alert
-      chime.currentTime = 0;
-      chime.loop = true;
-      const playPromise = chime.play();
-
-      const showAlert = () => {
-        alert(`"${timer.name}" has completed!`);
-        // stop alarm
-        chime.pause();
-        chime.currentTime = 0;
-        chime.loop = false;
-
-        // reset timer
-        timer.remaining = timer.initialDuration;
-        timer.paused = true;
-        renderTimers();
-      };
-
-      if (playPromise !== undefined) {
-        playPromise
-          .catch(() => {})   // ignore autoplay failures
-          .finally(showAlert);
-      } else {
-        showAlert();
-      }
-      return;
+      timer.remaining = 0;
+      timer.completed = true;
+      alert(`"${timer.name}" has completed!`);
     }
     renderTimers();
   };
 
   startTimerBtn.addEventListener('click', () => {
     const name = document.getElementById('timer-name').value.trim();
-    const hours =
-      parseInt(document.getElementById('timer-hours').value.trim()) || 0;
-    const minutes =
-      parseInt(document.getElementById('timer-minutes').value.trim()) || 0;
-    const seconds =
-      parseInt(document.getElementById('timer-seconds').value.trim()) || 0;
+    const hours = parseInt(document.getElementById('timer-hours').value.trim()) || 0;
+    const minutes = parseInt(document.getElementById('timer-minutes').value.trim()) || 0;
+    const seconds = parseInt(document.getElementById('timer-seconds').value.trim()) || 0;
 
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
@@ -134,6 +131,7 @@
       initialDuration: totalSeconds,
       paused: false,
       interval: null,
+      completed: false,
     };
 
     timer.interval = setInterval(() => tickTimer(timer), 1000);
@@ -172,18 +170,15 @@
     dashboardLocked = true;
     lockImg.src = chrome.runtime.getURL('images/lock.png');
     dashboardPanel.classList.remove('moveable');
-    relativeOffsetX =
-      dashboardPanel.getBoundingClientRect().left - todoRect.left;
+    relativeOffsetX = dashboardPanel.getBoundingClientRect().left - todoRect.left;
     relativeOffsetY = dashboardPanel.getBoundingClientRect().top - todoRect.top;
   });
 
   // State variables
   let dashboardLocked = true;
   let dashboardDragging = false;
-  let dashOffsetX = 0,
-    dashOffsetY = 0;
-  let relativeOffsetX = 0,
-    relativeOffsetY = 0;
+  let dashOffsetX = 0, dashOffsetY = 0;
+  let relativeOffsetX = 0, relativeOffsetY = 0;
 
   // Close Dashboard
   closeDashboard.addEventListener('click', () => {
