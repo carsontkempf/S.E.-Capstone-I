@@ -23,7 +23,8 @@
         "public/font/ProximaNova-Reg-webfont.woff2",
         "public/font/ProximaNova-Bold-webfont.woff2",
         "templates/todo.html",
-        "templates/dashboard.html"
+        "templates/dashboard.html",
+        "sounds/slot_machine_payout.wav"
         ],
       "matches": ["<all_urls>"]
     }

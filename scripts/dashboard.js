@@ -1,12 +1,14 @@
-// scripts/dashboard.js
 (async () => {
   // Load dashboard template
   const dashboardUrl = chrome.runtime.getURL('templates/dashboard.html');
   const dashboardPanel = document.createElement('div');
   dashboardPanel.id = 'todo-dashboard';
-  const dashboardHtml = await fetch(dashboardUrl).then(res => res.text());
+  const dashboardHtml = await fetch(dashboardUrl).then((res) => res.text());
   dashboardPanel.innerHTML = dashboardHtml;
   document.body.appendChild(dashboardPanel);
+
+  // sound to play when a timer completes
+  const chime = new Audio(chrome.runtime.getURL('sounds/slot_machine_payout.wav'));
 
   // TIMER LOGIC
   const startTimerBtn = document.getElementById('start-timer-btn');
@@ -41,9 +43,12 @@
       controls.style.marginTop = '5px';
 
       const pauseBtn = document.createElement('button');
-      pauseBtn.textContent = (timer.paused && timer.remaining === timer.initialDuration)
-        ? '▶ Start'
-        : (timer.paused ? '▶ Resume' : '⏸ Pause');
+      pauseBtn.textContent =
+        timer.paused && timer.remaining === timer.initialDuration
+          ? '▶ Start'
+          : timer.paused
+            ? '▶ Resume'
+            : '⏸ Pause';
       pauseBtn.addEventListener('click', () => {
         if (timer.paused) {
           timer.paused = false;
@@ -76,10 +81,32 @@
     timer.remaining--;
     if (timer.remaining <= 0) {
       clearInterval(timer.interval);
-      alert(`"${timer.name}" has completed!`);
-      timer.remaining = timer.initialDuration;
-      timer.paused = true;
-      renderTimers();
+
+      // attempt to play alarm, then show alert
+      chime.currentTime = 0;
+      chime.loop = true;
+      const playPromise = chime.play();
+
+      const showAlert = () => {
+        alert(`"${timer.name}" has completed!`);
+        // stop alarm
+        chime.pause();
+        chime.currentTime = 0;
+        chime.loop = false;
+
+        // reset timer
+        timer.remaining = timer.initialDuration;
+        timer.paused = true;
+        renderTimers();
+      };
+
+      if (playPromise !== undefined) {
+        playPromise
+          .catch(() => {})   // ignore autoplay failures
+          .finally(showAlert);
+      } else {
+        showAlert();
+      }
       return;
     }
     renderTimers();
@@ -87,9 +114,12 @@
 
   startTimerBtn.addEventListener('click', () => {
     const name = document.getElementById('timer-name').value.trim();
-    const hours = parseInt(document.getElementById('timer-hours').value.trim()) || 0;
-    const minutes = parseInt(document.getElementById('timer-minutes').value.trim()) || 0;
-    const seconds = parseInt(document.getElementById('timer-seconds').value.trim()) || 0;
+    const hours =
+      parseInt(document.getElementById('timer-hours').value.trim()) || 0;
+    const minutes =
+      parseInt(document.getElementById('timer-minutes').value.trim()) || 0;
+    const seconds =
+      parseInt(document.getElementById('timer-seconds').value.trim()) || 0;
 
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
@@ -142,15 +172,18 @@
     dashboardLocked = true;
     lockImg.src = chrome.runtime.getURL('images/lock.png');
     dashboardPanel.classList.remove('moveable');
-    relativeOffsetX = dashboardPanel.getBoundingClientRect().left - todoRect.left;
+    relativeOffsetX =
+      dashboardPanel.getBoundingClientRect().left - todoRect.left;
     relativeOffsetY = dashboardPanel.getBoundingClientRect().top - todoRect.top;
   });
 
   // State variables
   let dashboardLocked = true;
   let dashboardDragging = false;
-  let dashOffsetX = 0, dashOffsetY = 0;
-  let relativeOffsetX = 0, relativeOffsetY = 0;
+  let dashOffsetX = 0,
+    dashOffsetY = 0;
+  let relativeOffsetX = 0,
+    relativeOffsetY = 0;
 
   // Close Dashboard
   closeDashboard.addEventListener('click', () => {
