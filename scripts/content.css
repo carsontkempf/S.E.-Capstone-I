@@ -41,7 +41,7 @@
 
 #todo button#addTaskButton:hover {
     background-color: #357ae8;
-}
+} 
 
 #todo ul {
     list-style: none;
@@ -119,7 +119,6 @@
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
-
 #todo {
     position: fixed;
     bottom: 20px;
@@ -133,5 +132,7 @@
     min-width: 180px;
     min-height: 54px;
     visibility: visible;
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }

@@ -5,6 +5,7 @@
   const templateUrl = chrome.runtime.getURL('scripts/todo.html');
   const templateHtml = await fetch(templateUrl).then((res) => res.text());
   container.innerHTML = templateHtml;
+  
   document.body.appendChild(container);
 
   const taskInput = container.querySelector('#taskInput');
@@ -183,8 +184,28 @@
       <div id="timer-panel" style="border: 1px solid #ccc; padding: 10px; border-radius: 6px;">
         <h4 style="margin-top: 0;">Timers</h4>
         <input id="timer-name" type="text" placeholder="Timer Name" style="width: 100%; margin-bottom: 5px;" />
-        <input id="timer-minutes" type="number" placeholder="Minutes" min="1" style="width: 100%; margin-bottom: 5px;" />
+        <div style="display: flex; justify-content: space-between; gap: 5px; margin-bottom: 5px;">
+          <div style="flex: 1;">
+            <label style="font-size: 12px;">Hours</label>
+            <div style="display: flex;">
+              <input id="timer-hours" type="number" value="0" min="0" style="flex: 1;" />
+            </div>
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 12px;">Minutes</label>
+            <div style="display: flex;">
+              <input id="timer-minutes" type="number" value="0" min="0" max="59" style="flex: 1;" />
+            </div>
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 12px;">Seconds</label>
+            <div style="display: flex;">
+              <input id="timer-seconds" type="number" value="0" min="0" max="59" style="flex: 1;" />
+            </div>
+          </div>
+        </div>
         <button id="start-timer-btn" style="width: 100%; margin-bottom: 10px;">Start Timer</button>
+
         <ul id="timer-list" style="list-style: none; padding-left: 0;"></ul>
       </div>
     </div>
@@ -193,15 +214,26 @@
 
   // Opens dashboard
   dashboardButton.addEventListener('click', () => {
-    const buttonRect = dashboardButton.getBoundingClientRect();
-    dashboardPanel.style.left = `${buttonRect.right + 10}px`;
-    dashboardPanel.style.top = `${buttonRect.top}px`;
+    // Always reset to a fresh position near the to-do box
+    const todoRect = todoBox.getBoundingClientRect();
+    dashboardPanel.style.left = `${todoRect.right + 10}px`;
+    dashboardPanel.style.top = `${todoRect.top}px`;
     dashboardPanel.style.display = 'block';
+  
+    // Force-lock and re-capture relative offset
+    dashboardLocked = true;
+    lockToggle.textContent = '🔒';
+    dashboardPanel.classList.remove('moveable');
+  
+    relativeOffsetX = dashboardPanel.getBoundingClientRect().left - todoRect.left;
+    relativeOffsetY =dashboardPanel.getBoundingClientRect().top - todoRect.top;
   });
+  
   
   // Close Dashboard
   closeDashboard.addEventListener('click', () => {
     dashboardPanel.style.display = 'none';
+    dashboardOpen = false;
   });
   
   lockToggle.addEventListener('click', () => {
@@ -216,6 +248,7 @@
       relativeOffsetY = dashRect.top - todoRect.top;
     }
   });
+  
 
   // Move dashboard with todo box only if locked
   new MutationObserver(() => {
@@ -225,7 +258,7 @@
       dashboardPanel.style.top = `${todoBoxRect.top + relativeOffsetY}px`;
     }
   }).observe(todoBox, { attributes: true, attributeFilter: ['style'] });
-
+  
 
   // Dashboard drag behavior when unlocked
   dashboardPanel.addEventListener('mousedown', (e) => {
@@ -309,15 +342,26 @@
     resizehandle.style.display = 'none';
     toggleButton.textContent = '–';
   }
+
   toggleButton.addEventListener('click', () => {
     isVisible = !isVisible;
+  
     todoBody.style.display = isVisible ? 'block' : 'none';
     addTaskButton.style.display = isVisible ? 'block' : 'none';
     resizehandle.style.display = isVisible ? 'block' : 'none';
-    if (isVisible) todoBox.style.height = resizeHeight;
-    else (resizeHeight = todoBox.style.height), (todoBox.style.height = 'auto');
+  
+    if (isVisible) {
+      todoBox.style.height = resizeHeight;
+    } else {
+      // ===> Save current height for restoration and hide dashboard
+      resizeHeight = todoBox.style.height;
+      todoBox.style.height = 'auto';
+      dashboardPanel.style.display = 'none';
+    }
+  
     toggleButton.textContent = isVisible ? '☰' : '–';
   });
+  
 
   // Drag functionality
   let isDragging = false,
@@ -437,16 +481,44 @@
     renderTimers();
   };
   
+  // startTimerBtn.addEventListener('click', () => {
+  //   const name = document.getElementById('timer-name').value.trim();
+  //   const minutes = parseInt(document.getElementById('timer-minutes').value.trim());
+  
+  //   if (!name || isNaN(minutes) || minutes <= 0) {
+  //     alert('Enter a valid timer name and duration.');
+  //     return;
+  //   }
+  
+  //   const totalSeconds = minutes * 60;
+  //   const timer = {
+  //     name,
+  //     remaining: totalSeconds,
+  //     paused: false,
+  //     interval: null,
+  //   };
+  
+  //   timer.interval = setInterval(() => tickTimer(timer), 1000);
+  //   timers.push(timer);
+  //   renderTimers();
+  
+  //   document.getElementById('timer-name').value = '';
+  //   document.getElementById('timer-minutes').value = '';
+  // });
+
   startTimerBtn.addEventListener('click', () => {
     const name = document.getElementById('timer-name').value.trim();
-    const minutes = parseInt(document.getElementById('timer-minutes').value.trim());
+    const hours = parseInt(document.getElementById('timer-hours').value.trim()) || 0;
+    const minutes = parseInt(document.getElementById('timer-minutes').value.trim()) || 0;
+    const seconds = parseInt(document.getElementById('timer-seconds').value.trim()) || 0;
   
-    if (!name || isNaN(minutes) || minutes <= 0) {
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  
+    if (!name || totalSeconds <= 0) {
       alert('Enter a valid timer name and duration.');
       return;
     }
   
-    const totalSeconds = minutes * 60;
     const timer = {
       name,
       remaining: totalSeconds,
@@ -459,6 +531,9 @@
     renderTimers();
   
     document.getElementById('timer-name').value = '';
-    document.getElementById('timer-minutes').value = '';
+    document.getElementById('timer-hours').value = 0;
+    document.getElementById('timer-minutes').value = 0;
+    document.getElementById('timer-seconds').value = 0;
   });
+  
 })();
