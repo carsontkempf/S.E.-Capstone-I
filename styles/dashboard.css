@@ -1,0 +1,92 @@
+#todo-dashboard {
+    position: fixed;
+    bottom: 20px;
+    right: 340px;
+    width: 300px;
+    height: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 9999;
+    display: none;
+    overflow: auto;
+    resize: both;
+    min-width: 180px;
+    min-height: 100px;
+    max-height: 90vh;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-header h3 {
+  margin: 0;
+}
+
+/* Header controls */
+.dashboard-controls {
+  display: flex;
+  gap: 5px;
+}
+.lock-btn,
+.close-btn {
+  font-size: 14px;
+}
+
+/* Dashboard content wrapper */
+.dashboard-content {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Timer panel */
+.timer-panel {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+}
+.timer-panel h4 {
+  margin-top: 0;
+}
+
+/* Timer name input */
+#timer-name {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+/* Grouping hours/minutes/seconds */
+.timer-input-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.timer-input-container {
+  flex: 1;
+}
+.timer-input-wrapper {
+  display: flex;
+}
+.timer-input {
+  flex: 1;
+}
+
+/* Start button */
+.start-timer-btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Timer list */
+.timer-list {
+  list-style: none;
+  padding-left: 0;
+}
