@@ -13,6 +13,17 @@
     visibility: hidden;
 }
 
+<<<<<<< HEAD:scripts/content.css
+#todo h1 {
+    margin: 0 0 0.5rem 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 1.2rem;
+    color: #333;
+    border-bottom: none;
+}
+=======
+>>>>>>> 2118579 (Re-organized files to have separate responsibilities):styles/todo.css
 
 #todo input[type="text"] {
     width: calc(100% - 12px);
@@ -139,9 +150,9 @@
     border: 1px solid #f1f1f1;
     box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
     border-radius: 8px;
-    width: 100px;
-    min-width: 250px;
-    min-height: 50px;
+    width: 300px;
+    min-width: 180px;
+    min-height: 54px;
     visibility: visible;
 <<<<<<< HEAD
     overflow: auto;
@@ -166,14 +177,9 @@
   background-color: #f1f1f1;
   color: white;
   border: none;
-  border-radius: 5px;
   font-size: 18px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 0;
-  z-index: 10000;
 }
 #dashboardButton img {
   width: 24px;
@@ -184,7 +190,6 @@
   padding: 10px;
   overflow-y: auto;
   flex: 1;
-  padding-bottom: 50px;
 }
 
 #taskInput {
@@ -200,7 +205,6 @@
 #taskList {
   padding-left: 20px;
   margin-top: 10px;
-  margin-bottom: 10px;
 }
 
 #addTaskButton {
@@ -272,28 +276,24 @@
   object-fit: contain;
 }
 
-/* Save-button checkmark styling in edit mode */
-#taskList li button img {
-  width: 27px;
-  height: 27px;
-  object-fit: contain;
-}
-
-#taskList li button.delete:hover img {
-  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(95%) contrast(85%);
-}
-
-/* Minimum height when resizing */
-#todo.resizing {
-  min-width: 250px;
-  min-height: 123px;
-}
-
-/* Green hover for add/save checkmarks — softer, partially transparent */
-#addTaskButton:hover img,
-button.save:hover img {
-  filter: brightness(0) saturate(100%)
-          invert(55%) sepia(90%) saturate(400%)
-          hue-rotate(85deg) brightness(85%) contrast(90%);
-  opacity: 0.8;          /* slightly transparent */
-}
+#todo-dashboard {
+    position: fixed;               /* Fixed to viewport like the to-do box */
+    bottom: 20px;                  /* Adjust as needed */
+    right: 340px;                  /* To the left of the todo box */
+    width: 300px;
+    height: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 9999;
+    overflow: auto;                /* Enables scrollbars when content overflows */
+    resize: both;                  /* Makes the dashboard resizable */
+    min-width: 180px;
+    min-height: 100px;
+    max-height: 90vh;              /* Keeps it from overflowing the screen */
+  }
+  
+>>>>>>> e7fb3c3 (Changed emojis to icons)
+>>>>>>> Stashed changes:scripts/content.css
