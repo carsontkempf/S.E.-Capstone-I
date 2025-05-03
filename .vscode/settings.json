@@ -1,0 +1,12 @@
+{
+    "files.exclude": {
+        ".idea": true,
+        "public/font": true,
+        ".gitignore": true,
+        "prettier.config.js": true,
+        "Project Requirements Document.md": true,
+        "Resources.md": true,
+        "public": true,
+        ".vscode": true
+    }
+}

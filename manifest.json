@@ -7,7 +7,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["scripts/content.js"],
-      "css": ["scripts/content.css"]
+      "css": ["styles/dashboard.css", "styles/todo.css"]
     }
   ],
   "icons": {
@@ -25,7 +25,8 @@
         "images/*",
         "public/font/ProximaNova-Reg-webfont.woff2",
         "public/font/ProximaNova-Bold-webfont.woff2",
-        "scripts/todo.html"
+        "templates/todo.html",
+        "templates/dashboard.html"
         ],
       "matches": ["<all_urls>"]
     }
