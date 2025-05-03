@@ -15,6 +15,8 @@
 
 #todo h1 {
     margin: 0 0 0.5rem 0;
+    padding-top: 0;
+    padding-bottom: 0;
     font-size: 1.2rem;
     color: #333;
     border-bottom: none;
@@ -54,6 +56,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem;
+    margin-bottom: 0;
     border-bottom: 1px solid #ccc;
 }
 
@@ -62,6 +65,7 @@
 }
 
 #todo li span {
+    box-sizing: border-box;
     flex-grow: 1;
     margin-right: 0.5rem;
 }
@@ -124,6 +128,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
+    line-height: 1.5;
     z-index: 9999;
     background: white;
     border: 1px solid #ccc;
@@ -134,4 +139,5 @@
     min-height: 54px;
     visibility: visible;
     overflow: auto;
+    font-size: 16px;
 }
