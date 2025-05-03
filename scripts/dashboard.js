@@ -40,61 +40,32 @@
       controls.style.gap = '5px';
       controls.style.marginTop = '5px';
 
-      if (timer.completed) {
-        // Delete button (same as cancel)
-        const deleteBtn = document.createElement('button');
-        const deleteImg = document.createElement('img');
-        deleteImg.src = chrome.runtime.getURL('images/delete_icon.png');
-        deleteImg.alt = 'Delete';
-        deleteBtn.appendChild(deleteImg);
-        deleteBtn.addEventListener('click', () => {
-          clearInterval(timer.interval);
-          timers.splice(index, 1);
-          renderTimers();
-        });
-
-        // Restart button
-        const restartBtn = document.createElement('button');
-        const restartImg = document.createElement('img');
-        restartImg.src = chrome.runtime.getURL('images/restart_icon.png');
-        restartImg.alt = 'Restart';
-        restartBtn.appendChild(restartImg);
-        restartBtn.addEventListener('click', () => {
-          timer.remaining = timer.initialDuration;
+      const pauseBtn = document.createElement('button');
+      pauseBtn.textContent = (timer.paused && timer.remaining === timer.initialDuration)
+        ? '▶ Start'
+        : (timer.paused ? '▶ Resume' : '⏸ Pause');
+      pauseBtn.addEventListener('click', () => {
+        if (timer.paused) {
           timer.paused = false;
-          timer.completed = false;
           timer.interval = setInterval(() => tickTimer(timer), 1000);
-          renderTimers();
-        });
-
-        controls.appendChild(restartBtn);
-        controls.appendChild(deleteBtn);
-        return;  // skip the normal pause/cancel below
-      } else {
-        const pauseBtn = document.createElement('button');
-        pauseBtn.textContent = timer.paused ? '▶ Resume' : '⏸ Pause';
-        pauseBtn.addEventListener('click', () => {
-          if (timer.paused) {
-            timer.paused = false;
-            timer.interval = setInterval(() => tickTimer(timer), 1000);
-          } else {
-            timer.paused = true;
-            clearInterval(timer.interval);
-          }
-          renderTimers();
-        });
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = '✖ Cancel';
-        cancelBtn.addEventListener('click', () => {
+        } else {
+          timer.paused = true;
           clearInterval(timer.interval);
-          timers.splice(index, 1);
-          renderTimers();
-        });
+        }
+        renderTimers();
+      });
 
-        controls.appendChild(pauseBtn);
-        controls.appendChild(cancelBtn);
-      }
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = '✖ Delete';
+      cancelBtn.addEventListener('click', () => {
+        clearInterval(timer.interval);
+        timers.splice(index, 1);
+        renderTimers();
+      });
+
+      controls.appendChild(pauseBtn);
+      controls.appendChild(cancelBtn);
+
       li.appendChild(controls);
       timerList.appendChild(li);
     });
@@ -105,9 +76,11 @@
     timer.remaining--;
     if (timer.remaining <= 0) {
       clearInterval(timer.interval);
-      timer.remaining = 0;
-      timer.completed = true;
       alert(`"${timer.name}" has completed!`);
+      timer.remaining = timer.initialDuration;
+      timer.paused = true;
+      renderTimers();
+      return;
     }
     renderTimers();
   };
@@ -131,7 +104,6 @@
       initialDuration: totalSeconds,
       paused: false,
       interval: null,
-      completed: false,
     };
 
     timer.interval = setInterval(() => tickTimer(timer), 1000);
