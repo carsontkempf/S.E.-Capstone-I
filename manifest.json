@@ -16,13 +16,17 @@
     "48": "images/icon-48.png",
     "128": "images/icon-128.png"
   },
+  "permissions": [
+    "storage"
+  ],
   "web_accessible_resources": [
     {
       "resources": [
         "images/*",
         "public/font/ProximaNova-Reg-webfont.woff2",
-        "public/font/ProximaNova-Bold-webfont.woff2"
-      ],
+        "public/font/ProximaNova-Bold-webfont.woff2",
+        "scripts/todo.html"
+        ],
       "matches": ["<all_urls>"]
     }
   ]
