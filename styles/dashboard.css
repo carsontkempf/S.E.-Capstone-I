@@ -20,11 +20,13 @@
 
 .dashboard-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .dashboard-header h3 {
+  flex: 1;
+  text-align: center;
   margin: 0;
 }
 
@@ -33,14 +35,49 @@
   display: flex;
   gap: 5px;
 }
-.lock-btn,
+/* Dashboard header buttons */
+.lock-btn {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 28px;
+  height: 28px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  z-index: 10000;
+}
 .close-btn {
-  font-size: 14px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  z-index: 10000;
 }
 
 /* Dashboard content wrapper */
 .dashboard-content {
-  margin-top: 10px;
+  margin-top: 15px;
   display: flex;
   flex-direction: column;
   gap: 15px;
