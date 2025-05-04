@@ -8,8 +8,12 @@
     <img src="images/clock.png" alt="Dashboard" />
   </button>
   <div id="todo-body">
-    <input type="text" id="taskInput" placeholder="Enter task name" />
-    <input type="text" id="urlInput" placeholder="Enter task URL" />
+    <div class="input-wrapper hidden">
+      <input type="text" id="taskInput" placeholder="Enter task name" />
+    </div>
+    <div class="input-wrapper hidden">
+      <input type="text" id="urlInput" placeholder="Enter task URL" />
+    </div>
     <ul id="taskList"></ul>
   </div>  
   <button id="addTaskButton" title="Add Task">+</button>
