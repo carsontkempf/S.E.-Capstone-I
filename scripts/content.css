@@ -123,18 +123,10 @@
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> e7fb3c3 (Changed emojis to icons)
 #todo {
     position: fixed;
     bottom: 20px;
     right: 20px;
-<<<<<<< HEAD
-    line-height: 1.5;
-=======
->>>>>>> e7fb3c3 (Changed emojis to icons)
     z-index: 9999;
     background: white;
     border: 1px solid #ccc;
