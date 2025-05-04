@@ -13,6 +13,17 @@
     visibility: hidden;
 }
 
+<<<<<<< HEAD:scripts/content.css
+#todo h1 {
+    margin: 0 0 0.5rem 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 1.2rem;
+    color: #333;
+    border-bottom: none;
+}
+=======
+>>>>>>> 2118579 (Re-organized files to have separate responsibilities):styles/todo.css
 
 #todo input[type="text"] {
     width: calc(100% - 12px);
@@ -22,6 +33,27 @@
     border-radius: 4px;
 }
 
+<<<<<<< HEAD:scripts/content.css
+#todo button#addTaskButton {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #4285f4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+
+#todo button#addTaskButton:hover {
+    background-color: #357ae8;
+<<<<<<< Updated upstream:styles/todo.css
+}
+=======
+>>>>>>> 2118579 (Re-organized files to have separate responsibilities):styles/todo.css
+=======
+} 
+>>>>>>> Stashed changes:scripts/content.css
 
 #todo ul {
     list-style: none;
@@ -53,6 +85,7 @@
 }
 
 #todo li span {
+    box-sizing: border-box;
     flex-grow: 1;
     margin-right: 0.5rem;
 }
@@ -100,10 +133,18 @@
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> e7fb3c3 (Changed emojis to icons)
 #todo {
     position: fixed;
     bottom: 20px;
     right: 20px;
+<<<<<<< HEAD
+    line-height: 1.5;
+=======
+>>>>>>> e7fb3c3 (Changed emojis to icons)
     z-index: 9999;
     background: white;
     border: 1px solid #f1f1f1;
@@ -113,10 +154,13 @@
     min-width: 250px;
     min-height: 50px;
     visibility: visible;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+<<<<<<< HEAD
+    overflow: auto;
+    font-size: 16px;
 }
+<<<<<<< Updated upstream:styles/todo.css
+<<<<<<< HEAD:scripts/content.css
+=======
 
 #todo h1 {
   margin: 0;
@@ -201,6 +245,36 @@
   cursor: se-resize;
   z-index: 10;
 }
+>>>>>>> 2118579 (Re-organized files to have separate responsibilities):styles/todo.css
+=======
+=======
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#todo-dashboard {
+    position: fixed;               /* Fixed to viewport like the to-do box */
+    bottom: 20px;                  /* Adjust as needed */
+    right: 340px;                  /* To the left of the todo box */
+    width: 300px;
+    height: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 9999;
+    overflow: auto;                /* Enables scrollbars when content overflows */
+    resize: both;                  /* Makes the dashboard resizable */
+    min-width: 180px;
+    min-height: 100px;
+    max-height: 90vh;              /* Keeps it from overflowing the screen */
+  }
+  
+>>>>>>> e7fb3c3 (Changed emojis to icons)
+>>>>>>> Stashed changes:scripts/content.css
+
 
 /* Checkmark icon styling */
 #addTaskButton img {
@@ -209,28 +283,24 @@
   object-fit: contain;
 }
 
-/* Save-button checkmark styling in edit mode */
-#taskList li button img {
-  width: 27px;
-  height: 27px;
-  object-fit: contain;
-}
-
-#taskList li button.delete:hover img {
-  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(95%) contrast(85%);
-}
-
-/* Minimum height when resizing */
-#todo.resizing {
-  min-width: 250px;
-  min-height: 123px;
-}
-
-/* Green hover for add/save checkmarks — softer, partially transparent */
-#addTaskButton:hover img,
-button.save:hover img {
-  filter: brightness(0) saturate(100%)
-          invert(55%) sepia(90%) saturate(400%)
-          hue-rotate(85deg) brightness(85%) contrast(90%);
-  opacity: 0.8;          /* slightly transparent */
-}
+#todo-dashboard {
+    position: fixed;               /* Fixed to viewport like the to-do box */
+    bottom: 20px;                  /* Adjust as needed */
+    right: 340px;                  /* To the left of the todo box */
+    width: 300px;
+    height: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 9999;
+    overflow: auto;                /* Enables scrollbars when content overflows */
+    resize: both;                  /* Makes the dashboard resizable */
+    min-width: 180px;
+    min-height: 100px;
+    max-height: 90vh;              /* Keeps it from overflowing the screen */
+  }
+  
+>>>>>>> e7fb3c3 (Changed emojis to icons)
+>>>>>>> Stashed changes:scripts/content.css
