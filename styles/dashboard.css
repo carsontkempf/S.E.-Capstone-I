@@ -38,8 +38,8 @@
 /* Dashboard header buttons */
 .lock-btn {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 0px;
+  left: 0px;
   width: 28px;
   height: 28px;
   background-color: #c7c7c7;
@@ -57,8 +57,8 @@
 }
 .close-btn {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 0px;
+  right: 0px;
   width: 28px;
   height: 28px;
   background-color: #c7c7c7;
