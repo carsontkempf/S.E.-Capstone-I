@@ -1,36 +1,36 @@
 <div class="dashboard-header">
-    <h3>Timer Dashboard</h3>
-    <div class="dashboard-controls">
-      <button id="lockToggle" title="Lock Position" class="lock-btn"></button>
-      <button id="closeDashboard" class="close-btn">x</button>
-    </div>
+  <h3>Timer Dashboard</h3>
+  <div class="dashboard-controls">
+    <button id="lockToggle" title="Lock Position" class="lock-btn"></button>
+    <button id="closeDashboard" class="close-btn">x</button>
   </div>
-  <div id="dashboard-content" class="dashboard-content">
-    <!-- Timer Panel -->
-    <div id="timer-panel" class="timer-panel">
-      <h4>Timers</h4>
-      <input id="timer-name" type="text" placeholder="Timer Name" />
-      <div class="timer-input-group">
-        <div class="timer-input-container">
-          <label class="timer-label">Hours</label>
-          <div class="timer-input-wrapper">
-            <input id="timer-hours" type="number" value="0" min="0" class="timer-input" />
-          </div>
-        </div>
-        <div class="timer-input-container">
-          <label class="timer-label">Minutes</label>
-          <div class="timer-input-wrapper">
-            <input id="timer-minutes" type="number" value="0" min="0" max="59" class="timer-input" />
-          </div>
-        </div>
-        <div class="timer-input-container">
-          <label class="timer-label">Seconds</label>
-          <div class="timer-input-wrapper">
-            <input id="timer-seconds" type="number" value="0" min="0" max="59" class="timer-input" />
-          </div>
+</div>
+<div id="dashboard-content" class="dashboard-content">
+  <!-- Timer Panel -->
+  <div id="timer-panel" class="timer-panel">
+    <h4>Timers</h4>
+    <input id="timer-name" type="text" placeholder="Timer Name" />
+    <div class="timer-input-group">
+      <div class="timer-input-container">
+        <label class="timer-label">Hours</label>
+        <div class="timer-input-wrapper">
+          <input id="timer-hours" type="number" value="0" min="0" class="timer-input" />
         </div>
       </div>
-      <button id="start-timer-btn" class="start-timer-btn">Start Timer</button>
-      <ul id="timer-list" class="timer-list"></ul>
+      <div class="timer-input-container">
+        <label class="timer-label">Minutes</label>
+        <div class="timer-input-wrapper">
+          <input id="timer-minutes" type="number" value="0" min="0" max="59" class="timer-input" />
+        </div>
+      </div>
+      <div class="timer-input-container">
+        <label class="timer-label">Seconds</label>
+        <div class="timer-input-wrapper">
+          <input id="timer-seconds" type="number" value="0" min="0" max="59" class="timer-input" />
+        </div>
+      </div>
     </div>
+    <button id="start-timer-btn" class="start-timer-btn">Start Timer</button>
+    <ul id="timer-list" class="timer-list"></ul>
   </div>
+</div>
