@@ -170,15 +170,18 @@
 
   const handleAddButton = () => {
     if (!pendingOpen) {
-      taskInput.style.display = 'block';
-      urlInput.style.display = 'block';
+      taskInput.closest('.input-wrapper').classList.remove('hidden');
+      urlInput.closest('.input-wrapper').classList.remove('hidden');
       addTaskButton.innerHTML = '';
+
       const checkIcon = document.createElement('img');
       checkIcon.src = chrome.runtime.getURL('images/checkmark.png');
       checkIcon.alt = 'Confirm';
-      checkIcon.style.width = '24px';
-      checkIcon.style.height = '24px';
+      checkIcon.style.width = '26px';
+      checkIcon.style.height = '26px';
       addTaskButton.appendChild(checkIcon);
+
+      addTaskButton.classList.add('confirming');
       taskInput.focus();
       pendingOpen = true;
     } else {
@@ -187,8 +190,9 @@
 
       if (!title && !url) {
         // If both empty exit
-        taskInput.style.display = 'none';
-        urlInput.style.display = 'none';
+        taskInput.closest('.input-wrapper').classList.add('hidden');
+        urlInput.closest('.input-wrapper').classList.add('hidden');
+
         addTaskButton.textContent = '+';
         pendingOpen = false;
       } else if (title) {
@@ -199,14 +203,16 @@
 
         taskInput.value = '';
         urlInput.value = '';
-        taskInput.style.display = 'none';
-        urlInput.style.display = 'none';
+        taskInput.closest('.input-wrapper').classList.add('hidden');
+        urlInput.closest('.input-wrapper').classList.add('hidden');
+
         addTaskButton.textContent = '+';
         pendingOpen = false;
       } else if (url) {
         // if url has data but no title return
         return;
       }
+      addTaskButton.classList.remove('confirming');
     }
   };
 
@@ -218,8 +224,9 @@
       } else if (e.key === 'Escape') {
         taskInput.value = '';
         urlInput.value = '';
-        taskInput.style.display = 'none';
-        urlInput.style.display = 'none';
+        taskInput.closest('.input-wrapper').classList.add('hidden');
+        urlInput.closest('.input-wrapper').classList.add('hidden');
+
         addTaskButton.textContent = '+';
         pendingOpen = false;
       }
@@ -240,37 +247,43 @@
 
   toggleButton.addEventListener('click', () => {
     isVisible = !isVisible;
-
+  
     if (isVisible) {
       todoBox.classList.remove('collapsed');
       todoBody.style.display = 'block';
       addTaskButton.style.display = 'block';
       resizehandle.style.display = 'block';
-      // Restore exact pixel size if available, else fallback to last resize
-      todoBox.style.width = savedWidth || resizeWidth;
-      todoBox.style.height = savedHeight || resizeHeight;
+  
+      if (!savedWidth || !savedHeight) {
+        const rect = todoBox.getBoundingClientRect();
+        savedWidth = `${rect.width}px`;
+        savedHeight = `${rect.height}px`;
+      }
+  
+      todoBox.style.width = savedWidth;
+      todoBox.style.height = savedHeight;
     } else {
       todoBody.style.display = 'none';
       addTaskButton.style.display = 'none';
       resizehandle.style.display = 'none';
-      // capture current size for restore
+  
       const rect = todoBox.getBoundingClientRect();
       savedWidth = `${rect.width}px`;
       savedHeight = `${rect.height}px`;
-      // Save last set style values for fallback
-      resizeHeight = todoBox.style.height;
-      resizeWidth = todoBox.style.width;
+  
       todoBox.style.height = 'auto';
       todoBox.style.width = '';
-      document.dispatchEvent(new CustomEvent('dashboard-close'));
-      // Reset min-size after minimize
       todoBox.style.minWidth = '';
       todoBox.style.minHeight = '';
       todoBox.classList.add('collapsed');
+  
+      document.dispatchEvent(new CustomEvent('dashboard-close'));
     }
-
+  
     toggleButton.textContent = isVisible ? '☰' : '–';
   });
+  
+  
 
   // Drag functionality
   let isDragging = false,
