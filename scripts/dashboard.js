@@ -212,18 +212,11 @@
 
     if (dashboardLocked) {
       waitForElement('#todo').then((todoBox) => {
-        if (!todoBox) {
-          console.error('todoBox still not found.');
-          return;
-        }
-
         const todoRect = todoBox.getBoundingClientRect();
-        // proceed with using todoRect safely
+        const dashRect = dashboardPanel.getBoundingClientRect();
+        relativeOffsetX = dashRect.left - todoRect.left;
+        relativeOffsetY = dashRect.top - todoRect.top;
       });
-
-      const dashRect = dashboardPanel.getBoundingClientRect();
-      relativeOffsetX = dashRect.left - todoRect.left;
-      relativeOffsetY = dashRect.top - todoRect.top;
     }
   });
 
