@@ -1,73 +1,62 @@
 /* content.css */
 #todo-container {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    z-index: 9999;
-    font-family: Arial, sans-serif;
-    background: rgba(255, 255, 255, 0);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 1rem;
-    width: 300px;
-    visibility: hidden;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  font-family: Arial, sans-serif;
+  background: rgba(255, 255, 255, 0);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 300px;
+  visibility: hidden;
 }
 
-
 #todo input[type="text"] {
-    width: calc(100% - 12px);
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #f1f1f1;
-    border-radius: 4px;
+  width: calc(100% - 12px);
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 
 #todo ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 #todo li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0.5rem 1rem 0.5rem;
-    padding-right: 40px;
-    position: relative;
-}
-
-#todo li::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 40px;
-  bottom: 0;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-#todo li:last-child {
-    border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  position: relative;
+  border: 1px solid #a7a7a7;        /* Add a visible border */
+  border-radius: 6px;               /* Slightly rounded corners */
+  margin-bottom: 8px;               /* Space between tasks */
+  background-color: #fafafa;        /* Optional: light background */
 }
 
 #todo li span {
-    flex-grow: 1;
-    margin-right: 0.5rem;
+  flex-grow: 1;
+  margin-right: 0.5rem;
 }
 
 #todo li button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 0.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.25rem;
 }
 
 #todo li button img {
-    width: 24px;
-    height: 24px;
-    transition: filter 0.2s ease;
+  width: 24px;
+  height: 24px;
+  transition: filter 0.2s ease;
 }
 
 
@@ -89,39 +78,56 @@
   font-size: 18px;
   line-height: 1;
   z-index: 10000;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
+  background-color: #333;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
 }
 
 #todo-header {
     position: relative;
     padding: 10px;
     cursor: move;
-    background: #f1f1f1;
+    background: #e6e6e6;
     border-bottom: 1px solid #f1f1f1;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
 #todo {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-    background: white;
-    border: 1px solid #f1f1f1;
-    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    width: 100px;
-    min-width: 250px;
-    min-height: 50px;
-    visibility: visible;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  width: 100px;
+  min-width: 250px;
+  min-height: 50px;
+  visibility: visible;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 #todo h1 {
   margin: 0;
   text-align: center;
   font-size: 18px;
+  border-bottom: none;
 }
 
 #dashboardButton {
@@ -130,8 +136,8 @@
   right: 4px;
   width: 28px;
   height: 28px;
-  background-color: #c7c7c7;
-  color: black;
+  background-color: #e6e6e6;
+  color: white;
   border: none;
   border-radius: 5px;
   display: flex;
@@ -144,31 +150,68 @@
   z-index: 10000;
 }
 #dashboardButton img {
-  width: 24px;
-  height: 24px;
+width: 24px;
+height: 24px;
 }
 
 #todo-body {
-  padding: 10px;
-  overflow-y: auto;
-  flex: 1;
-  padding-bottom: 50px;
+padding: 10px;
+overflow-y: auto;
+flex: 1;
+padding-bottom: 50px;
 }
 
 #taskInput {
-  width: 100%;
-  display: none;
-}
-#urlInput {
-  width: 100%;
-  margin-top: 5px;
-  display: none;
+width: 100%;
+display: none;
 }
 
+#urlInput {
+width: 100%;
+margin-top: 5px;
+display: none;
+}
+
+#taskInput,
+#urlInput {
+  display: block; /* always block so it doesn't collapse the wrapper */
+}
+
+.input-wrapper.hidden {
+  display: none; /* this controls actual visibility */
+}
+
+
+.input-wrapper {
+  margin-bottom: 8px;
+  background-color: white;
+  height: 32px; /* Smaller, consistent height */
+  display: flex;
+  align-items: center; /* Vertical centering */
+  padding: 0 8px; /* Optional horizontal padding */
+}
+
+
+.input-wrapper input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0; /* Remove extra height */
+}
+
+
+.input-wrapper input::placeholder {
+  color: #919191;
+}
+
+
 #taskList {
-  padding-left: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+padding-left: 20px;
+margin-top: 10px;
+margin-bottom: 10px;
 }
 
 #addTaskButton {
@@ -182,13 +225,24 @@
   font-size: 22px;
   line-height: 0;
   border-radius: 50%;
-  border: none;
+  border: 2px solid #000000;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   margin-bottom: 10px;
-  border: 2px solid #000000;
+  transition: border 0.2s ease;
+}
+
+/* Remove border in confirming state */
+#addTaskButton.confirming {
+  border: none;
+}
+
+/* Larger image size when confirming */
+#addTaskButton.confirming img {
+  width: 50px;
+  height: 50px;
 }
 
 /* Resize handle */
@@ -198,40 +252,33 @@
   right: 0;
   width: 16px;
   height: 16px;
-  background: #f1f1f1;
+  background: #e6e6e6;
   cursor: se-resize;
   z-index: 10;
 }
 
-/* Checkmark icon styling */
-#addTaskButton img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
 /* Save-button checkmark styling in edit mode */
 #taskList li button img {
-  width: 27px;
-  height: 27px;
-  object-fit: contain;
+width: 27px;
+height: 27px;
+object-fit: contain;
 }
 
 #taskList li button.delete:hover img {
-  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(95%) contrast(85%);
+filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(95%) contrast(85%);
 }
 
 /* Minimum height when resizing */
 #todo.resizing {
-  min-width: 250px;
-  min-height: 123px;
+min-width: 250px;
+min-height: 123px;
 }
 
 /* Green hover for add/save checkmarks — softer, partially transparent */
 #addTaskButton:hover img,
 button.save:hover img {
-  filter: brightness(0) saturate(100%)
-          invert(55%) sepia(90%) saturate(400%)
-          hue-rotate(85deg) brightness(85%) contrast(90%);
-  opacity: 0.8;          /* slightly transparent */
+filter: brightness(0) saturate(100%)
+        invert(55%) sepia(90%) saturate(400%)
+        hue-rotate(85deg) brightness(85%) contrast(90%);
+opacity: 0.8;          /* slightly transparent */
 }

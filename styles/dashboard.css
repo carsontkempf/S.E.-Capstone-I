@@ -1,102 +1,108 @@
 #todo-dashboard {
-    position: fixed;
-    bottom: 20px;
-    right: 340px;
-    width: 300px;
-    height: 300px;
-    background: white;
-    border: 1px solid #c7c7c7;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    padding: 10px;
-    z-index: 9999;
-    display: none;
-    overflow: auto;
-    resize: both;
-    min-width: 180px;
-    min-height: 100px;
-    max-height: 90vh;
+  position: fixed;
+  bottom: 20px;
+  right: 340px;
+  width: 300px;
+  height: 300px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 9999;
+  display: none;
+  overflow: auto;
+  resize: both;
+  min-width: 180px;
+  min-height: 100px;
+  max-height: 90vh;
 }
 
 .dashboard-header {
-  display: flex;
-  align-items: center;
-  position: relative;
+display: flex;
+align-items: center;
+position: relative;
 }
 
 .dashboard-header h3 {
-  flex: 1;
-  text-align: center;
-  margin: 0;
+flex: 1;
+text-align: center;
+margin: 0;
 }
 
 /* Header controls */
 .dashboard-controls {
-  display: flex;
-  gap: 5px;
+display: flex;
+gap: 5px;
 }
 /* Dashboard header buttons */
 .lock-btn {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 28px;
-  height: 28px;
-  background-color: #c7c7c7;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  font-size: 18px;
-  line-height: 1;
-  z-index: 10000;
+position: absolute;
+top: 4px;
+left: 4px;
+width: 28px;
+height: 28px;
+background-color: #333;
+color: white;
+border: none;
+border-radius: 5px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+padding: 0;
+font-size: 18px;
+line-height: 1;
+z-index: 10000;
 }
 .close-btn {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 28px;
-  height: 28px;
-  background-color: #c7c7c7;
-  color: rgb(0, 0, 0);
-  border: none;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  font-size: 20px;
-  line-height: 1;
-  z-index: 10000;
+position: absolute;
+top: 4px;
+right: 4px;
+width: 28px;
+height: 28px;
+background-color: #333;
+color: white;
+border: none;
+border-radius: 5px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+padding: 0;
+font-size: 10px;
+line-height: 1;
+z-index: 10000;
 }
+
+.hidden {
+  display: none !important;
+}
+
 
 /* Dashboard content wrapper */
 .dashboard-content {
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+margin-top: 15px;
+display: flex;
+flex-direction: column;
+gap: 15px;
 }
 
 /* Timer panel */
 .timer-panel {
-  border: 1px solid #c7c7c7;
-  padding: 10px;
-  border-radius: 6px;
+border: 1px solid #ccc;
+padding: 10px;
+border-radius: 6px;
 }
 .timer-panel h4 {
-  margin-top: 0;
+margin-top: 0;
 }
 
 /* Timer name input */
 #timer-name {
-  width: 100%;
-  margin-bottom: 5px;
+box-sizing: border-box;
+width: 100%;
+margin-bottom: 5px;
 }
 
 /* Grouping hours/minutes/seconds */
@@ -105,25 +111,52 @@
   justify-content: space-between;
   gap: 5px;
   margin-bottom: 5px;
+  flex-wrap: wrap;
 }
+
 .timer-input-container {
   flex: 1;
+  min-width: 0; /* prevent overflow */
 }
+
 .timer-input-wrapper {
   display: flex;
+  width: 100%;
 }
+
 .timer-input {
-  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 4px;
+  box-sizing: border-box;
 }
+
+.timer-input-container {
+  flex: 1;
+  min-width: 60px;
+  max-width: 100px; /* optional cap */
+}
+
 
 /* Start button */
 .start-timer-btn {
-  width: 100%;
-  margin-bottom: 10px;
+width: 100%;
+margin-bottom: 10px;
 }
 
 /* Timer list */
 .timer-list {
-  list-style: none;
-  padding-left: 0;
+list-style: none;
+padding-left: 0;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#volume-slider {
+  flex: 1;
 }

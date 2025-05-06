@@ -156,7 +156,7 @@
 
   // Lock icon setup
   const lockImg = document.createElement('img');
-  lockImg.src = chrome.runtime.getURL('images/lock.png');
+  lockImg.src = chrome.runtime.getURL('images/lock_white.png');
   lockImg.alt = 'Lock Toggle';
   lockImg.style.width = '16px';
   lockImg.style.height = '16px';
@@ -170,7 +170,7 @@
     dashboardPanel.style.top = `${todoRect.top}px`;
     dashboardPanel.style.display = 'block';
     dashboardLocked = true;
-    lockImg.src = chrome.runtime.getURL('images/lock.png');
+    lockImg.src = chrome.runtime.getURL('images/lock_white.png');
     dashboardPanel.classList.remove('moveable');
     relativeOffsetX =
       dashboardPanel.getBoundingClientRect().left - todoRect.left;
@@ -187,33 +187,82 @@
 
   // Close Dashboard
   closeDashboard.addEventListener('click', () => {
+    // Save current size
+    const dashRect = dashboardPanel.getBoundingClientRect();
+    savedDashWidth = `${dashRect.width}px`;
+    savedDashHeight = `${dashRect.height}px`;
+  
     dashboardPanel.style.display = 'none';
   });
+  
 
   // Lock/Unlock Dashboard movement
   lockToggle.addEventListener('click', () => {
     dashboardLocked = !dashboardLocked;
     lockImg.src = chrome.runtime.getURL(
-      dashboardLocked ? 'images/lock.png' : 'images/unlock.png'
+      dashboardLocked ? 'images/lock_white.png' : 'images/unlock_white.png'
     );
     dashboardPanel.classList.toggle('moveable', !dashboardLocked);
 
     if (dashboardLocked) {
-      const todoRect = todoBox.getBoundingClientRect();
+      waitForElement('#todo').then((todoBox) => {
+        if (!todoBox) {
+          console.error('todoBox still not found.');
+          return;
+        }
+      
+        const todoRect = todoBox.getBoundingClientRect();
+        // proceed with using todoRect safely
+      });
+      
       const dashRect = dashboardPanel.getBoundingClientRect();
       relativeOffsetX = dashRect.left - todoRect.left;
       relativeOffsetY = dashRect.top - todoRect.top;
     }
   });
 
+  async function waitForElement(selector) {
+    const existing = document.querySelector(selector);
+    if (existing) return existing;
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((mutations, obs) => {
+        const el = document.querySelector(selector);
+        if (el) {
+          obs.disconnect();
+          resolve(el);
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+  }
+
   // Sync position when todo moves (if locked)
-  new MutationObserver(() => {
-    if (dashboardLocked && dashboardPanel.style.display !== 'none') {
+  const observer = new MutationObserver(() => {
+    if (dashboardLocked) {
       const todoRect = todoBox.getBoundingClientRect();
       dashboardPanel.style.left = `${todoRect.left + relativeOffsetX}px`;
       dashboardPanel.style.top = `${todoRect.top + relativeOffsetY}px`;
     }
-  }).observe(todoBox, { attributes: true, attributeFilter: ['style'] });
+  });
+  
+  // observer.observe(todoBox, { attributes: true, attributeFilter: ['style'] });
+  waitForElement('#todo').then((todoBox) => {
+    const observer = new MutationObserver(() => {
+      if (dashboardLocked) {
+        const todoRect = todoBox.getBoundingClientRect();
+        dashboardPanel.style.left = `${todoRect.left + relativeOffsetX}px`;
+        dashboardPanel.style.top = `${todoRect.top + relativeOffsetY}px`;
+      }
+    });
+  
+    observer.observe(todoBox, { attributes: true, attributeFilter: ['style'] });
+  });
+  
+  // Volume control
+  const volumeSlider = dashboardPanel.querySelector('#volume-slider');
+  volumeSlider.addEventListener('input', () => {
+    chime.volume = parseFloat(volumeSlider.value);
+  });
 
   // Drag dashboard when unlocked
   dashboardPanel.addEventListener('mousedown', (e) => {
