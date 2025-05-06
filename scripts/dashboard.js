@@ -156,7 +156,7 @@
 
   // Lock icon setup
   const lockImg = document.createElement('img');
-  lockImg.src = chrome.runtime.getURL('images/lock.png');
+  lockImg.src = chrome.runtime.getURL('images/lock_white.png');
   lockImg.alt = 'Lock Toggle';
   lockImg.style.width = '16px';
   lockImg.style.height = '16px';
@@ -170,7 +170,7 @@
     dashboardPanel.style.top = `${todoRect.top}px`;
     dashboardPanel.style.display = 'block';
     dashboardLocked = true;
-    lockImg.src = chrome.runtime.getURL('images/lock.png');
+    lockImg.src = chrome.runtime.getURL('images/lock_white.png');
     dashboardPanel.classList.remove('moveable');
     relativeOffsetX =
       dashboardPanel.getBoundingClientRect().left - todoRect.left;
@@ -200,7 +200,7 @@
   lockToggle.addEventListener('click', () => {
     dashboardLocked = !dashboardLocked;
     lockImg.src = chrome.runtime.getURL(
-      dashboardLocked ? 'images/lock.png' : 'images/unlock.png'
+      dashboardLocked ? 'images/lock_white.png' : 'images/unlock_white.png'
     );
     dashboardPanel.classList.toggle('moveable', !dashboardLocked);
 
