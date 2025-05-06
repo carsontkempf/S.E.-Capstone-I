@@ -164,8 +164,6 @@ display: none;
 
 
 .input-wrapper {
-  border: 1px solid #919191;
-  border-radius: 4px;
   margin-bottom: 8px;
   background-color: white;
   height: 32px; /* Smaller, consistent height */

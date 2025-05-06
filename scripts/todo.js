@@ -229,6 +229,7 @@
 
         addTaskButton.textContent = '+';
         pendingOpen = false;
+        addTaskButton.classList.remove('confirming');
       }
     });
   });
