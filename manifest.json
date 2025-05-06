@@ -7,7 +7,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["scripts/load-templates.js", "scripts/todo.js", "scripts/dashboard.js"],
-      "css": ["styles/dashboard.css", "styles/todo.css"]
+      "css": ["styles/dashboard.css", "styles/todo.css"],
+      "run_at": "document_end"
     }
   ],
   "icons": {

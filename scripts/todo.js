@@ -9,7 +9,7 @@
     });
   };
   await waitForDocumentLoad();
-  console.log('test');
+  
   const DEFAULT_VISIBILITY = false;
   const container = document.getElementById('todo-container');
 
