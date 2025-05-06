@@ -1,6 +1,6 @@
 (async () => {
-  const waitForDocumentLoad = async () => {
-    return new Promise((resolve) => {
+  const waitForDocumentLoad = async () =>
+    new Promise((resolve) => {
       let container = document.getElementById('todo-container');
       if (container !== null) resolve(container);
       else
@@ -9,7 +9,6 @@
           100
         );
     });
-  };
   const container = await waitForDocumentLoad();
 
   const DEFAULT_VISIBILITY = false;
@@ -262,9 +261,11 @@
       resizehandle.style.display = 'block';
 
       if (!savedWidth || !savedHeight) {
+        todoBox.classList.add('resizing');
         const rect = todoBox.getBoundingClientRect();
         savedWidth = `${rect.width}px`;
         savedHeight = `${rect.height}px`;
+        todoBox.classList.remove('resizing');
       }
 
       todoBox.style.width = savedWidth;
