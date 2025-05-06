@@ -195,31 +195,23 @@
     dashboardPanel.style.display = 'none';
   });
   
-
-  // Lock/Unlock Dashboard movement
   lockToggle.addEventListener('click', () => {
     dashboardLocked = !dashboardLocked;
     lockImg.src = chrome.runtime.getURL(
       dashboardLocked ? 'images/lock_white.png' : 'images/unlock_white.png'
     );
     dashboardPanel.classList.toggle('moveable', !dashboardLocked);
-
+  
     if (dashboardLocked) {
       waitForElement('#todo').then((todoBox) => {
-        if (!todoBox) {
-          console.error('todoBox still not found.');
-          return;
-        }
-      
         const todoRect = todoBox.getBoundingClientRect();
-        // proceed with using todoRect safely
+        const dashRect = dashboardPanel.getBoundingClientRect();
+        relativeOffsetX = dashRect.left - todoRect.left;
+        relativeOffsetY = dashRect.top - todoRect.top;
       });
-      
-      const dashRect = dashboardPanel.getBoundingClientRect();
-      relativeOffsetX = dashRect.left - todoRect.left;
-      relativeOffsetY = dashRect.top - todoRect.top;
     }
   });
+  
 
   async function waitForElement(selector) {
     const existing = document.querySelector(selector);
