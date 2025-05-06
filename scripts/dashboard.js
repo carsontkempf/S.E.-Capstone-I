@@ -1,15 +1,16 @@
 (async () => {
   const waitForDocumentLoad = async () => {
     return new Promise((resolve) => {
-      if (document.readyState === 'complete') {
-        resolve();
-      } else {
-        window.addEventListener('load', resolve);
-      }
+      let dashboardPanel = document.getElementById('todo-dashboard');
+      if (dashboardPanel !== null) resolve(dashboardPanel);
+      else
+        setTimeout(
+          () => waitForDocumentLoad().then((result) => resolve(result)),
+          100
+        );
     });
   };
-  await waitForDocumentLoad();
-  const dashboardPanel = document.getElementById('todo-dashboard');
+  const dashboardPanel = await waitForDocumentLoad();
 
   // sound to play when a timer completes
   const chime = new Audio(
