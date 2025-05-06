@@ -100,6 +100,7 @@ margin-top: 0;
 
 /* Timer name input */
 #timer-name {
+box-sizing: border-box;
 width: 100%;
 margin-bottom: 5px;
 }
