@@ -1,15 +1,15 @@
 (async () => {
-  const waitForDocumentLoad = async () => {
-    return new Promise((resolve) => {
-      if (document.readyState === 'complete') {
-        resolve();
-      } else {
-        window.addEventListener('load', resolve);
-      }
+  const waitForDocumentLoad = async () =>
+    new Promise((resolve) => {
+      let dashboardPanel = document.getElementById('todo-dashboard');
+      if (dashboardPanel !== null) resolve(dashboardPanel);
+      else
+        setTimeout(
+          () => waitForDocumentLoad().then((result) => resolve(result)),
+          100
+        );
     });
-  };
-  await waitForDocumentLoad();
-  const dashboardPanel = document.getElementById('todo-dashboard');
+  const dashboardPanel = await waitForDocumentLoad();
 
   // sound to play when a timer completes
   const chime = new Audio(
@@ -211,18 +211,11 @@
 
     if (dashboardLocked) {
       waitForElement('#todo').then((todoBox) => {
-        if (!todoBox) {
-          console.error('todoBox still not found.');
-          return;
-        }
-
         const todoRect = todoBox.getBoundingClientRect();
-        // proceed with using todoRect safely
+        const dashRect = dashboardPanel.getBoundingClientRect();
+        relativeOffsetX = dashRect.left - todoRect.left;
+        relativeOffsetY = dashRect.top - todoRect.top;
       });
-
-      const dashRect = dashboardPanel.getBoundingClientRect();
-      relativeOffsetX = dashRect.left - todoRect.left;
-      relativeOffsetY = dashRect.top - todoRect.top;
     }
   });
 

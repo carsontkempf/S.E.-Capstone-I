@@ -1,17 +1,17 @@
 (async () => {
-  const waitForDocumentLoad = async () => {
-    return new Promise((resolve) => {
-      if (document.readyState === 'complete') {
-        resolve();
-      } else {
-        window.addEventListener('load', resolve);
-      }
+  const waitForDocumentLoad = async () =>
+    new Promise((resolve) => {
+      let container = document.getElementById('todo-container');
+      if (container !== null) resolve(container);
+      else
+        setTimeout(
+          () => waitForDocumentLoad().then((result) => resolve(result)),
+          100
+        );
     });
-  };
-  await waitForDocumentLoad();
-  
+  const container = await waitForDocumentLoad();
+
   const DEFAULT_VISIBILITY = false;
-  const container = document.getElementById('todo-container');
 
   const taskInput = container.querySelector('#taskInput');
   const urlInput = container.querySelector('#urlInput');
@@ -261,9 +261,11 @@
       resizehandle.style.display = 'block';
 
       if (!savedWidth || !savedHeight) {
+        todoBox.classList.add('resizing');
         const rect = todoBox.getBoundingClientRect();
         savedWidth = `${rect.width}px`;
         savedHeight = `${rect.height}px`;
+        todoBox.classList.remove('resizing');
       }
 
       todoBox.style.width = savedWidth;
