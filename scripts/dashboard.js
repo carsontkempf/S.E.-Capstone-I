@@ -1,14 +1,20 @@
 (async () => {
-  // Load dashboard template
-  const dashboardUrl = chrome.runtime.getURL('templates/dashboard.html');
-  const dashboardPanel = document.createElement('div');
-  dashboardPanel.id = 'todo-dashboard';
-  const dashboardHtml = await fetch(dashboardUrl).then((res) => res.text());
-  dashboardPanel.innerHTML = dashboardHtml;
-  document.body.appendChild(dashboardPanel);
+  const waitForDocumentLoad = async () => {
+    return new Promise((resolve) => {
+      if (document.readyState === 'complete') {
+        resolve();
+      } else {
+        window.addEventListener('load', resolve);
+      }
+    });
+  };
+  await waitForDocumentLoad();
+  const dashboardPanel = document.getElementById('todo-dashboard');
 
   // sound to play when a timer completes
-  const chime = new Audio(chrome.runtime.getURL('sounds/slot_machine_payout.wav'));
+  const chime = new Audio(
+    chrome.runtime.getURL('sounds/slot_machine_payout.wav')
+  );
 
   // TIMER LOGIC
   const startTimerBtn = document.getElementById('start-timer-btn');
@@ -102,7 +108,7 @@
 
       if (playPromise !== undefined) {
         playPromise
-          .catch(() => {})   // ignore autoplay failures
+          .catch(() => {}) // ignore autoplay failures
           .finally(showAlert);
       } else {
         showAlert();
@@ -191,27 +197,34 @@
     const dashRect = dashboardPanel.getBoundingClientRect();
     savedDashWidth = `${dashRect.width}px`;
     savedDashHeight = `${dashRect.height}px`;
-  
+
     dashboardPanel.style.display = 'none';
   });
-  
+
+  // Lock/Unlock Dashboard movement
   lockToggle.addEventListener('click', () => {
     dashboardLocked = !dashboardLocked;
     lockImg.src = chrome.runtime.getURL(
       dashboardLocked ? 'images/lock_white.png' : 'images/unlock_white.png'
     );
     dashboardPanel.classList.toggle('moveable', !dashboardLocked);
-  
+
     if (dashboardLocked) {
       waitForElement('#todo').then((todoBox) => {
+        if (!todoBox) {
+          console.error('todoBox still not found.');
+          return;
+        }
+
         const todoRect = todoBox.getBoundingClientRect();
-        const dashRect = dashboardPanel.getBoundingClientRect();
-        relativeOffsetX = dashRect.left - todoRect.left;
-        relativeOffsetY = dashRect.top - todoRect.top;
+        // proceed with using todoRect safely
       });
+
+      const dashRect = dashboardPanel.getBoundingClientRect();
+      relativeOffsetX = dashRect.left - todoRect.left;
+      relativeOffsetY = dashRect.top - todoRect.top;
     }
   });
-  
 
   async function waitForElement(selector) {
     const existing = document.querySelector(selector);
@@ -236,7 +249,7 @@
       dashboardPanel.style.top = `${todoRect.top + relativeOffsetY}px`;
     }
   });
-  
+
   // observer.observe(todoBox, { attributes: true, attributeFilter: ['style'] });
   waitForElement('#todo').then((todoBox) => {
     const observer = new MutationObserver(() => {
@@ -246,10 +259,10 @@
         dashboardPanel.style.top = `${todoRect.top + relativeOffsetY}px`;
       }
     });
-  
+
     observer.observe(todoBox, { attributes: true, attributeFilter: ['style'] });
   });
-  
+
   // Volume control
   const volumeSlider = dashboardPanel.querySelector('#volume-slider');
   volumeSlider.addEventListener('input', () => {

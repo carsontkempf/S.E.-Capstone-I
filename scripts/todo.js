@@ -1,12 +1,17 @@
 (async () => {
+  const waitForDocumentLoad = async () => {
+    return new Promise((resolve) => {
+      if (document.readyState === 'complete') {
+        resolve();
+      } else {
+        window.addEventListener('load', resolve);
+      }
+    });
+  };
+  await waitForDocumentLoad();
+  
   const DEFAULT_VISIBILITY = false;
-  const container = document.createElement('div');
-  container.id = 'todo-container';
-  const templateUrl = chrome.runtime.getURL('templates/todo.html');
-  const templateHtml = await fetch(templateUrl).then((res) => res.text());
-  container.innerHTML = templateHtml;
-
-  document.body.appendChild(container);
+  const container = document.getElementById('todo-container');
 
   const taskInput = container.querySelector('#taskInput');
   const urlInput = container.querySelector('#urlInput');
@@ -102,7 +107,7 @@
         li.appendChild(inputUrl);
 
         const saveButton = document.createElement('button');
-        saveButton.classList.add('save');  
+        saveButton.classList.add('save');
         const saveImg = document.createElement('img');
         saveImg.src = chrome.runtime.getURL('images/checkmark.png');
         saveImg.alt = 'Confirm';
@@ -248,43 +253,41 @@
 
   toggleButton.addEventListener('click', () => {
     isVisible = !isVisible;
-  
+
     if (isVisible) {
       todoBox.classList.remove('collapsed');
       todoBody.style.display = 'block';
       addTaskButton.style.display = 'block';
       resizehandle.style.display = 'block';
-  
+
       if (!savedWidth || !savedHeight) {
         const rect = todoBox.getBoundingClientRect();
         savedWidth = `${rect.width}px`;
         savedHeight = `${rect.height}px`;
       }
-  
+
       todoBox.style.width = savedWidth;
       todoBox.style.height = savedHeight;
     } else {
       todoBody.style.display = 'none';
       addTaskButton.style.display = 'none';
       resizehandle.style.display = 'none';
-  
+
       const rect = todoBox.getBoundingClientRect();
       savedWidth = `${rect.width}px`;
       savedHeight = `${rect.height}px`;
-  
+
       todoBox.style.height = 'auto';
       todoBox.style.width = '';
       todoBox.style.minWidth = '';
       todoBox.style.minHeight = '';
       todoBox.classList.add('collapsed');
-  
+
       document.dispatchEvent(new CustomEvent('dashboard-close'));
     }
-  
+
     toggleButton.textContent = isVisible ? '☰' : '–';
   });
-  
-  
 
   // Drag functionality
   let isDragging = false,
