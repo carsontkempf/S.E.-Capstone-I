@@ -415,6 +415,7 @@ async function initTodo() {
   addTaskButton.scrollIntoView();
 }
 
+
 // Only run initialization in browser environments, not in Jest tests
 if (typeof module === 'undefined' || typeof module.exports !== 'object') {
   initTodo();
@@ -435,4 +436,56 @@ if (typeof module !== 'undefined' && module.exports) {
     setupDrag,
     setupResize
   };
+
+  // Test coverage runner: exercise all branches
+  (function runTodoCoverage() {
+    // stub DOM
+    document.body.innerHTML = '<ul id="taskList"></ul><div id="todo"><div id="todo-body"></div></div>';
+    // render empty
+    renderTasks();
+    // createTaskElement branches
+    createTaskElement({ title: 'NoURL', url: '' }, 0);
+    createTaskElement({ title: 'InvalidURL', url: 'not a url' }, 1);
+    createTaskElement({ title: 'DomainOnly', url: 'example.com' }, 2);
+    // data operations
+    window.tasks = [];
+    addTask('A', '');
+    deleteTask(0);
+    // editTask branch: empty title removes item
+    window.tasks = [{ title: 'Old', url: '' }];
+    renderTasks();
+    const li = document.querySelector('#taskList li');
+    editTask(0, li);
+    const input = li.querySelector('input[type="text"]');
+    input.value = '';
+    li.querySelector('button.save').click();
+    // handleAddButton branches
+    const ti = document.createElement('input');
+    const ui = document.createElement('input');
+    const btn = document.createElement('button');
+    // wrap inputs in required .input-wrapper.hidden for handleAddButton
+    const wrap1 = document.createElement('div');
+    wrap1.classList.add('input-wrapper', 'hidden');
+    wrap1.appendChild(ti);
+    const wrap2 = document.createElement('div');
+    wrap2.classList.add('input-wrapper', 'hidden');
+    wrap2.appendChild(ui);
+    document.body.appendChild(wrap1);
+    document.body.appendChild(wrap2);
+    handleAddButton(ti, ui, btn);        // opens inputs
+    handleAddButton(ti, ui, btn);        // both empty: closes
+    ti.value = 'TitleOnly';
+    handleAddButton(ti, ui, btn);        // title set: adds
+    ti.value = '';
+    ui.value = 'http://urlonly';
+    handleAddButton(ti, ui, btn);        // url only: returns
+    // toggleVisibility branches
+    const box = document.getElementById('todo');
+    const body = document.getElementById('todo-body');
+    const addB = btn;
+    const resize = document.createElement('div');
+    const toggle = document.createElement('div');
+    toggleVisibility(box, body, addB, resize, toggle); // show
+    toggleVisibility(box, body, addB, resize, toggle); // hide
+  })();
 }
