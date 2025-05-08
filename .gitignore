@@ -4,3 +4,8 @@
 .idea/
 FirstPrompt.txt
 .vscode/*
+node_modules
+.babelrc
+jest.config.js
+package.json
+coverage/*

@@ -1,3 +1,5 @@
+const { formatTime } = require('./formatTime');
+
 (async () => {
   const waitForDocumentLoad = async () =>
     new Promise((resolve) => {

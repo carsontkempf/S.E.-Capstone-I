@@ -1,7 +1,17 @@
 {
     "files.exclude": {
         ".idea": true,
-        ".vscode": true
+        ".vscode": true,
+        "manifest.json": true,
+        "prettier.config.js": true,
+        "sounds": true,
+        "public": true,
+        "images": true,
+        "package-lock.json": true,
+        "node_modules": true,
+        "Docs": true,
+        "Deliverables": true,
+        "styles": true
     },
     "explorer.fileNesting.enabled": false,
     "jupyter.variableExplorerExclude": "module;function;builtin_function_or_method;ABCMeta;type;ModelMetaclass"

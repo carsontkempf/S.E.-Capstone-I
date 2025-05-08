@@ -352,3 +352,11 @@
   await loadTasks();
   renderTasks();
 })();
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    loadTasks,
+    saveTasks,
+    renderTasks
+  };
+}
