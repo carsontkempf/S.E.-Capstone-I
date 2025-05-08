@@ -1,19 +1,18 @@
 {
     "files.exclude": {
-        ".idea": true,
-        ".vscode": true,
-        "manifest.json": true,
-        "prettier.config.js": true,
-        "sounds": true,
-        "public": true,
-        "images": true,
-        "package-lock.json": true,
-        "node_modules": true,
-        "Docs": true,
-        "Deliverables": true,
-        ".babelrc": true,
-        "jest.config.js": true,
-        "package.json": true
+        ".idea": false,
+        ".vscode": false,
+        "manifest.json": false,
+        "prettier.config.js": false,
+        "sounds": false,
+        "public": false,
+        "images": false,
+        "package-lock.json": false,
+        "node_modules": false,
+        ".babelrc": false,
+        "jest.config.js": false,
+        "package.json": false,
+        ".gitignore": false
     },
     "explorer.fileNesting.enabled": false,
     "jupyter.variableExplorerExclude": "module;function;builtin_function_or_method;ABCMeta;type;ModelMetaclass"
