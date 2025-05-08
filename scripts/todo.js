@@ -1,4 +1,139 @@
-(async () => {
+// Fallback stub for chrome API in non-browser environments (e.g., Jest)
+if (typeof chrome === 'undefined') {
+  global.chrome = {
+    storage: {
+      local: {
+        get: (key) => Promise.resolve({ tasks: null }),
+        set: (obj) => Promise.resolve()
+      }
+    },
+    runtime: {
+      getURL: (path) => path
+    }
+  };
+}
+
+// Application state and helpers
+let tasks = [];
+
+async function loadTasks() {
+  const result = await chrome.storage.local.get('tasks');
+  tasks = result.tasks ? JSON.parse(result.tasks) : [];
+}
+
+async function saveTasks() {
+  await chrome.storage.local.set({ tasks: JSON.stringify(tasks) });
+}
+
+function renderTasks() {
+  const taskListEl = document.getElementById('taskList');
+  if (!taskListEl) return;
+  taskListEl.innerHTML = '';
+  tasks.forEach((task, index) => {
+    const li = document.createElement('li');
+    // Structure: text or link
+    let textElement;
+    let validUrl;
+    try {
+      new URL(task.url, location.origin);
+      validUrl = true;
+    } catch {
+      validUrl = false;
+    }
+    if (task.url && validUrl) {
+      textElement = document.createElement('a');
+      let destination;
+      try {
+        destination = new URL(task.url);
+      } catch {
+        destination = /\w\.\w/.test(task.url)
+          ? new URL('https://' + task.url)
+          : new URL(task.url, location.href);
+      }
+      textElement.href = destination;
+      textElement.target = '_blank';
+      textElement.textContent = task.title;
+    } else {
+      textElement = document.createElement('span');
+      textElement.textContent = task.title;
+    }
+    textElement.style.flex = '1';
+    li.appendChild(textElement);
+
+    const editButton = document.createElement('button');
+    const editImg = document.createElement('img');
+    editImg.src = chrome.runtime.getURL('images/edit.png');
+    editImg.alt = 'Edit';
+    editButton.appendChild(editImg);
+    li.appendChild(editButton);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('delete');
+    const deleteImg = document.createElement('img');
+    deleteImg.src = chrome.runtime.getURL('images/delete.png');
+    deleteImg.alt = 'Delete';
+    deleteButton.appendChild(deleteImg);
+    li.appendChild(deleteButton);
+
+    deleteButton.addEventListener('click', () => {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    });
+
+    editButton.addEventListener('click', () => {
+      const inputTitle = document.createElement('input');
+      inputTitle.type = 'text';
+      inputTitle.value = task.title;
+      inputTitle.style.marginRight = '8px';
+
+      const inputUrl = document.createElement('input');
+      inputUrl.type = 'text';
+      inputUrl.value = task.url || '';
+      inputUrl.style.marginRight = '8px';
+
+      li.innerHTML = '';
+      li.appendChild(inputTitle);
+      li.appendChild(inputUrl);
+
+      const saveButton = document.createElement('button');
+      saveButton.classList.add('save');
+      const saveImg = document.createElement('img');
+      saveImg.src = chrome.runtime.getURL('images/checkmark.png');
+      saveImg.alt = 'Confirm';
+      saveButton.appendChild(saveImg);
+      li.appendChild(saveButton);
+
+      const saveEdit = () => {
+        const newTitle = inputTitle.value.trim();
+        const newUrl = inputUrl.value.trim();
+        if (newTitle === '') {
+          tasks.splice(index, 1);
+        } else {
+          tasks[index] = { title: newTitle, url: newUrl };
+        }
+        saveTasks();
+        renderTasks();
+      };
+
+      saveButton.addEventListener('click', saveEdit);
+      inputTitle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveEdit();
+        if (e.key === 'Escape') renderTasks();
+      });
+      inputUrl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveEdit();
+        if (e.key === 'Escape') renderTasks();
+      });
+
+      inputTitle.focus();
+    });
+
+    taskListEl.appendChild(li);
+  });
+}
+
+async function initTodo() {
   const waitForDocumentLoad = async () =>
     new Promise((resolve) => {
       let container = document.getElementById('todo-container');
@@ -24,124 +159,7 @@
   const todoHeader = container.querySelector('#todo-header');
   // Restore dashboardButton setup
   // Task data and rendering
-  let tasks = [];
   let pendingOpen = false;
-
-  const loadTasks = async () => {
-    await chrome.storage.local.get('tasks').then((result) => {
-      tasks = result.tasks ? JSON.parse(result.tasks) : [];
-    });
-  };
-
-  const saveTasks = async () => {
-    await chrome.storage.local.set({ tasks: JSON.stringify(tasks) });
-  };
-
-  const renderTasks = () => {
-    taskList.innerHTML = '';
-    tasks.forEach((task, index) => {
-      const li = document.createElement('li');
-      // Structure: text or link
-      let textElement;
-      let validUrl;
-      try {
-        new URL(task.url, location.origin);
-        validUrl = true;
-      } catch {
-        validUrl = false;
-      }
-      if (task.url && validUrl) {
-        textElement = document.createElement('a');
-        let destination;
-        try {
-          destination = new URL(task.url);
-        } catch {
-          destination = /\w\.\w/.test(task.url)
-            ? new URL('https://' + task.url)
-            : new URL(task.url, location.href);
-        }
-        textElement.href = destination;
-        textElement.target = '_blank';
-        textElement.textContent = task.title;
-      } else {
-        textElement = document.createElement('span');
-        textElement.textContent = task.title;
-      }
-      textElement.style.flex = '1';
-      li.appendChild(textElement);
-
-      const editButton = document.createElement('button');
-      const editImg = document.createElement('img');
-      editImg.src = chrome.runtime.getURL('images/edit.png');
-      editImg.alt = 'Edit';
-      editButton.appendChild(editImg);
-      li.appendChild(editButton);
-
-      const deleteButton = document.createElement('button');
-      deleteButton.classList.add('delete');
-      const deleteImg = document.createElement('img');
-      deleteImg.src = chrome.runtime.getURL('images/delete.png');
-      deleteImg.alt = 'Delete';
-      deleteButton.appendChild(deleteImg);
-      li.appendChild(deleteButton);
-
-      deleteButton.addEventListener('click', () => {
-        tasks.splice(index, 1);
-        saveTasks();
-        renderTasks();
-      });
-
-      editButton.addEventListener('click', () => {
-        const inputTitle = document.createElement('input');
-        inputTitle.type = 'text';
-        inputTitle.value = task.title;
-        inputTitle.style.marginRight = '8px';
-
-        const inputUrl = document.createElement('input');
-        inputUrl.type = 'text';
-        inputUrl.value = task.url || '';
-        inputUrl.style.marginRight = '8px';
-
-        li.innerHTML = '';
-        li.appendChild(inputTitle);
-        li.appendChild(inputUrl);
-
-        const saveButton = document.createElement('button');
-        saveButton.classList.add('save');
-        const saveImg = document.createElement('img');
-        saveImg.src = chrome.runtime.getURL('images/checkmark.png');
-        saveImg.alt = 'Confirm';
-        saveButton.appendChild(saveImg);
-        li.appendChild(saveButton);
-
-        const saveEdit = () => {
-          const newTitle = inputTitle.value.trim();
-          const newUrl = inputUrl.value.trim();
-          if (newTitle === '') {
-            tasks.splice(index, 1);
-          } else {
-            tasks[index] = { title: newTitle, url: newUrl };
-          }
-          saveTasks();
-          renderTasks();
-        };
-
-        saveButton.addEventListener('click', saveEdit);
-        inputTitle.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') saveEdit();
-          if (e.key === 'Escape') renderTasks();
-        });
-        inputUrl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') saveEdit();
-          if (e.key === 'Escape') renderTasks();
-        });
-
-        inputTitle.focus();
-      });
-
-      taskList.appendChild(li);
-    });
-  };
 
   // Dashboard open dispatcher
   const dashboardButton = container.querySelector('#dashboardButton');
@@ -351,7 +369,12 @@
   addTaskButton.addEventListener('click', handleAddButton);
   await loadTasks();
   renderTasks();
-})();
+}
+
+// Only run initialization in browser environments, not in Jest tests
+if (typeof module === 'undefined' || typeof module.exports !== 'object') {
+  initTodo();
+}
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {

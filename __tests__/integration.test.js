@@ -22,6 +22,14 @@ describe("Extension E2E", () => {
   test("opens to-do panel and adds a task", async () => {
     // navigate to a dummy page where extension runs
     await page.goto("http://google.com");
+    // inject extension UI on the page if not automatically loaded
+    await page.evaluate(() => {
+      if (typeof window.injectTemplates === 'function') {
+        window.injectTemplates();
+      }
+    });
+    // wait for the to-do toggle button to appear
+    await page.waitForSelector('#todo-toggle', { timeout: 10000 });
     // click toggle to show to-do
     await page.click("#todo-toggle");
     await page.click("#addTaskButton");
